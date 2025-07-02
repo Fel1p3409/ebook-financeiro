@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-book Interativo: Mercados Financeiros</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --dark-blue: #2c3e50;
+            --br-green: #009B3A;
+            --br-yellow: #FFDF00;
+            --us-blue: #0A3161;
+            --us-red: #B31942;
+            --crypto-yellow: #F7931A;
+            --crypto-black: #333333;
+            --glass-bg: rgba(255, 255, 255, 0.1);
+            --glass-border: rgba(255, 255, 255, 0.2);
+            --text-light: #f0f0f0;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --gemini-purple: #8e44ad;
+        }
+
+        html { 
+            scroll-behavior: smooth; 
+        }
+
+        body {
+            font-family: 'Inter', Arial, sans-serif;
+            line-height: 1.7;
+            margin: 0;
+            color: var(--text-light);
+            background-color: #000;
+            background-image: url('https://images.pexels.com/photos/210607/pexels-photo-210607.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&dpr=2');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            display: flex; 
+        }
+
+        .ebook-container { 
+            display: flex; 
+            width: 100%; 
+            height: 100vh; 
+        }
+
+        #sidebar {
+            width: 300px; 
+            min-width: 280px;
+            background: rgba(10, 25, 47, 0.85);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-right: 1px solid var(--glass-border); 
+            padding: 25px;
+            overflow-y: auto; 
+            height: 100vh; 
+            position: fixed;
+            box-shadow: 5px 0 15px rgba(0,0,0,0.3); 
+            display: flex; 
+            flex-direction: column;
+            z-index: 10;
+        }
+        .sidebar-header { text-align: center; margin-bottom: 20px; }
+        .logo {
+            width: 150px;
+            height: 150px;
+            object-fit: contain;
+            margin: 0 auto 10px;
+        }
+        #sidebar h2 { font-size: 1.8em; color: white; text-align: center; margin: 0; }
+        #sidebar nav { flex-grow: 1; }
+        #sidebar nav ul { list-style: none; padding: 0; }
+        #sidebar nav > ul > li { margin-bottom: 10px; }
+        #sidebar nav a {
+            display: flex; align-items: center; gap: 12px; padding: 12px 18px; text-decoration: none;
+            color: var(--text-light); font-weight: bold; border-radius: 8px;
+            transition: all 0.3s ease; font-size: 1.1em; border: 1px solid transparent;
+        }
+        #sidebar nav a:hover, #sidebar nav a.active { color: white; transform: translateX(5px); }
+        #sidebar .main-topic > a:hover, #sidebar .main-topic > a.active {
+            background-color: var(--theme-color); border-color: var(--theme-border-color);
+            color: var(--theme-text-color, white);
+        }
+        .main-topic.us-theme { --theme-color: var(--us-blue); --theme-border-color: var(--us-red); }
+        .main-topic.br-theme { --theme-color: var(--br-green); --theme-border-color: var(--br-yellow); }
+        .main-topic.crypto-theme { --theme-color: var(--crypto-black); --theme-border-color: var(--crypto-yellow); --theme-text-color: var(--crypto-yellow); }
+        .main-topic.quiz-theme { --theme-color: var(--gemini-purple); --theme-border-color: #fff; }
+
+        #main-content {
+            flex-grow: 1; 
+            padding: 40px; 
+            overflow-y: auto; 
+            height: 100vh; 
+            margin-left: 300px;
+            box-sizing: border-box;
+        }
+        .content-section {
+            background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(12px); border-radius: 15px;
+            border: 1px solid var(--glass-border); padding: 30px; margin-bottom: 40px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        }
+        .content-section h2 {
+            font-size: 2.5em; margin-bottom: 30px; text-align: center;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+        .title-flag {
+            height: 1.2em;
+            width: auto;
+            border-radius: 4px;
+        }
+        .content-section h3 { font-size: 1.6em; margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid; }
+        .content-section h4 { font-size: 1.2em; margin-top: 25px; color: white; }
+        .content-section p, .content-section li { color: #ddd; }
+        .content-section ul { list-style-position: inside; padding-left: 0; }
+        #mercado-americano h2, #mercado-americano h3 { color: #a9c7ff; border-color: var(--us-red); }
+        #mercado-brasileiro h2, #mercado-brasileiro h3 { color: #a6ffcb; border-color: var(--br-yellow); }
+        #criptoativos h2, #criptoativos h3 { color: var(--crypto-yellow); border-color: var(--crypto-yellow); }
+        #quizzes h2 { color: var(--gemini-purple); }
+        strong { color: white; }
+        code { font-family: 'Roboto Mono', monospace; background-color: rgba(255,255,255,0.1); padding: 3px 6px; border-radius: 4px; font-size: 0.9em; border: 1px solid rgba(255,255,255,0.2); }
+
+        /* --- ESTILOS PARA RECURSOS INTERATIVOS --- */
+        .video-embed-container { margin: 35px auto 0; text-align: center; position: relative; cursor: pointer; border-radius: 10px; overflow: hidden; border: 2px solid var(--glass-border); transition: transform 0.3s ease, box-shadow 0.3s ease; max-width: 640px; }
+        .video-embed-container:hover { transform: scale(1.03); box-shadow: 0 8px 25px rgba(0,0,0,0.5); }
+        .video-thumbnail { display: block; width: 100%; height: auto; }
+        .video-embed-container .play-icon { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 80px; height: 80px; background-color: rgba(0, 0, 0, 0.6); border-radius: 50%; display: flex; align-items: center; justify-content: center; pointer-events: none; transition: background-color 0.3s ease; }
+        .video-embed-container:hover .play-icon { background-color: rgba(220, 53, 69, 0.8); }
+        .video-embed-container .play-icon::after { content: '▶'; font-size: 32px; color: white; margin-left: 5px; }
+        .video-player-wrapper { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; max-width: 100%; background: #000; margin-top: 20px; }
+        .video-player-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0; }
+        .audio-player-container { margin-top: 35px; margin-bottom: 20px; padding: 20px; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 10px; }
+        .audio-player-container h4 { margin-top: 0; margin-bottom: 15px; text-align: center; }
+        audio { width: 100%; filter: sepia(20%) saturate(70%) grayscale(1) contrast(99%) invert(12%); }
+        .chapter-navigation { margin-top: 40px; padding-top: 20px; border-top: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; gap: 15px; flex-wrap: wrap;  }
+        .nav-button { padding: 10px 20px; text-decoration: none; font-weight: bold; color: var(--text-light); background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 8px; transition: all 0.3s ease; text-align: center; }
+        .nav-button:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .nav-button.prev::before { content: '« '; }
+        .nav-button.next::after { content: ' »'; }
+
+        /* --- ESTILOS DO QUIZ --- */
+        .quiz-container details { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; margin-bottom: 20px; }
+        .quiz-container summary { font-size: 1.3em; font-weight: bold; padding: 20px; cursor: pointer; outline: none; display: flex; justify-content: space-between; align-items: center; }
+        .quiz-container summary::after { content: '▼'; transition: transform 0.3s; }
+        .quiz-container details[open] summary::after { transform: rotate(180deg); }
+        .quiz-form { padding: 0 20px 20px 20px; }
+        .quiz-question { margin-bottom: 25px; padding-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .quiz-question p { font-weight: bold; color: #fff; margin-bottom: 10px; }
+        .quiz-options label { display: block; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 8px; border: 1px solid #555; cursor: pointer; transition: background-color 0.2s; color: #ccc;}
+        .quiz-options label:hover { background-color: rgba(255,255,255,0.1); }
+        .quiz-options input { margin-right: 10px; }
+        .quiz-result { margin-top: 30px; text-align: center; font-size: 1.5em; font-weight: bold; padding: 15px; border-radius: 8px;}
+        .quiz-form button[type="submit"] { display: block; width: 100%; padding: 15px; font-size: 1.2em; background: var(--gemini-purple); color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px; }
+        .correct { background-color: rgba(40, 167, 69, 0.3) !important; border-color: var(--success-color) !important; color: #fff; }
+        .incorrect { background-color: rgba(220, 53, 69, 0.3) !important; border-color: var(--danger-color) !important; color: #fff; }
+        .correct::after { content: ' ✔ Correto'; color: var(--success-color); font-weight: bold; margin-left: 10px; }
+        .incorrect::after { content: ' ✖ Incorreto'; color: var(--danger-color); font-weight: bold; margin-left: 10px; }
+        
+        /* --- ESTILOS DO CHATBOT --- */
+        #chat-fab { position: fixed; bottom: 30px; right: 30px; background-color: var(--gemini-purple); color: white; width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: transform 0.2s; z-index: 999; }
+        #chat-fab:hover { transform: scale(1.1); }
+        #chat-popup { position: fixed; bottom: 100px; right: 30px; width: 400px; max-width: 90vw; height: 600px; max-height: 75vh; background: rgba(10, 25, 47, 0.95); backdrop-filter: blur(10px); border-radius: 15px; box-shadow: 0 5px 25px rgba(0,0,0,0.4); display: flex; flex-direction: column; overflow: hidden; z-index: 1000; opacity: 0; transform: scale(0.95) translateY(10px); transform-origin: bottom right; pointer-events: none; transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; }
+        #chat-popup.show-chat { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+        .chat-header { padding: 15px; background: rgba(0,0,0,0.3); color: white; font-weight: bold; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+        #close-chat { cursor: pointer; font-size: 20px; }
+        #chat-messages { flex-grow: 1; padding: 15px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        .message { padding: 10px 15px; border-radius: 18px; max-width: 85%; line-height: 1.4; white-space: pre-wrap; word-wrap: break-word; }
+        .user-message { background-color: var(--gemini-purple); color: white; align-self: flex-end; border-bottom-right-radius: 4px; }
+        .ai-message { background-color: var(--dark-blue); color: var(--text-light); align-self: flex-start; border-bottom-left-radius: 4px; }
+        #quick-questions { padding: 10px 15px; border-bottom: 1px solid var(--glass-border); flex-shrink: 0; display: flex; overflow-x: auto; -webkit-overflow-scrolling: touch; gap: 8px; padding-bottom: 15px; }
+        #quick-questions::-webkit-scrollbar { height: 6px; }
+        #quick-questions::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); }
+        #quick-questions::-webkit-scrollbar-thumb { background-color: var(--dark-blue); border-radius: 3px; }
+        .quick-question-btn { background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); color: var(--text-light); padding: 8px 12px; border-radius: 15px; cursor: pointer; font-size: 0.85em; transition: background-color 0.2s; white-space: nowrap; flex-shrink: 0; }
+        .quick-question-btn:hover { background-color: rgba(255,255,255,0.2); }
+        .chat-input-area { display: flex; padding: 10px; border-top: 1px solid var(--glass-border); flex-shrink: 0; }
+        #chat-input { flex-grow: 1; border: none; padding: 10px; border-radius: 20px; background-color: rgba(0,0,0,0.2); color: white; outline: none; }
+        #send-btn { background: var(--gemini-purple); border: none; color: white; padding: 0 15px; border-radius: 20px; margin-left: 10px; cursor: pointer; }
+
+        /* --- ESTILOS RESPONSIVOS PARA MOBILE --- */
+        @media (max-width: 800px) {
+            body { display: block; }
+            .ebook-container { display: block; height: auto; }
+            #sidebar { 
+                position: relative; 
+                width: 100%; 
+                height: auto; 
+                box-shadow: 0 5px 15px rgba(0,0,0,0.3); 
+                border-right: none; 
+                border-bottom: 1px solid var(--glass-border);
+                box-sizing: border-box;
+            }
+            #main-content { 
+                margin-left: 0; 
+                height: auto; 
+                padding: 20px; 
+            }
+            .content-section {
+                padding: 20px;
+            }
+            .content-section h2 { font-size: 2em; }
+            .content-section h3 { font-size: 1.4em; }
+            .content-section h4 { font-size: 1.1em; }
+            
+            #chat-popup { 
+                width: calc(100% - 20px); 
+                height: 80vh; 
+                bottom: 10px; 
+                right: 10px; 
+                left: 10px; 
+                transform-origin: bottom center; 
+            }
+            #chat-fab { 
+                bottom: 20px; 
+                right: 20px; 
+                width: 55px;
+                height: 55px;
+                font-size: 26px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="ebook-container">
+        <aside id="sidebar">
+            <div class="sidebar-header">
+                <img src="data:image/png;base64,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" alt="Xtraders Logo" class="logo">
+                <h2 style="display: none;">Xtraders</h2>
+            </div>
+            <nav>
+                <ul>
+                    <li class="main-topic us-theme"><a href="#mercado-americano"><img src="https://flagcdn.com/w40/us.png" class="title-flag" alt="Bandeira dos EUA"> Mercado Americano</a></li>
+                    <li class="main-topic br-theme"><a href="#mercado-brasileiro"><img src="https://flagcdn.com/w40/br.png" class="title-flag" alt="Bandeira do Brasil"> Mercado Brasileiro</a></li>
+                    <li class="main-topic crypto-theme"><a href="#criptoativos">🪙 Criptoativos</a></li>
+                    <li class="main-topic quiz-theme"><a href="#quizzes">✅ Quizzes de Aprendizagem</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <main id="main-content">
+            <section id="mercado-americano" class="content-section market-us">
+                <h2><img src="https://flagcdn.com/w80/us.png" class="title-flag" alt="Bandeira dos EUA"> Mercado Americano</h2>
+                <div class="audio-player-container"><h4>🎧 Áudio: Resumo do Mercado Americano</h4><audio controls><source src="https://www.dropbox.com/scl/fi/z622a2c5tv9wbqqllha70/1i5an-1ojhh.mp3?rlkey=0wieg5dgm5v5bv4293lcknd6c&st=m68eo39x&dl=1" type="audio/mpeg">Seu navegador não suporta o elemento de áudio.</audio></div>
+                <p>O mercado financeiro americano é um ambiente dinâmico e altamente estruturado onde diversos tipos de ativos são negociados. Ele se divide em diferentes segmentos, como o mercado de ações, o mercado de títulos, o mercado de câmbio e o de derivativos. Cada um desses segmentos possui características específicas, regras próprias e mecanismos de funcionamento que os tornam essenciais para a engrenagem do sistema econômico dos EUA.</p>
+                <h3>Bolsas de Valores e Índices</h3>
+                <h4>As Bolsas de Valores Americanas</h4>
+                <p>A bolsa de valores americana é considerada a maior e mais influente do mundo, abrigando companhias de capital aberto de renome global. A <strong>Nasdaq</strong> é quase inteiramente voltada para empresas de tecnologia, com destaques como Apple, Netflix, Meta (Facebook), Google (Alphabet), Amazon e Microsoft. A capitalização total de mercado das empresas negociadas nas bolsas americanas ultrapassa <strong>US$ 25 trilhões</strong>, evidenciando a magnitude e influência global desse mercado.</p>
+                <h4>Principais Índices Americanos</h4>
+                <ul><li><strong>Nasdaq Composite:</strong> Um índice amplo que reúne aproximadamente 3.000 empresas listadas na Nasdaq, sendo cerca de 60% do setor de tecnologia, refletindo a força da inovação e da transformação digital nos Estados Unidos.</li><li><strong>Nasdaq-100:</strong> Composto pelas 100 maiores empresas não financeiras listadas na Nasdaq, este índice é altamente concentrado em empresas de tecnologia e consumo, servindo como termômetro das companhias de maior crescimento e capitalização na bolsa.</li><li><strong>S&P 500 (Standard & Poor's 500):</strong> Representa as 500 maiores empresas de capital aberto dos Estados Unidos, englobando diversos setores da economia, e é considerado o índice mais representativo da saúde econômica americana.</li><li><strong>Dow Jones Industrial Average (DJIA):</strong> Acompanha o desempenho de 30 das maiores e mais influentes empresas dos EUA, sendo um dos índices mais antigos e simbólicos do mercado financeiro global, com foco em empresas consolidadas e de grande reputação.</li></ul>
+                <p>Juntos, esses índices oferecem uma visão abrangente e estratégica do comportamento do mercado americano, permitindo que investidores e analistas tomem decisões baseadas em dados concretos sobre os diferentes setores da economia.</p>
+                <h3>Vantagens de Operar no Mercado Internacional</h3>
+                <p>O mercado americano possui um maior volume quando comparado com a B3 (Bolsa de Valores Brasileira), o que resulta em excelentes movimentos, especialmente quando alinhado à tendência, com um risco pequeno para um alvo gigante (Payoff). Também oferece uma diversidade de ativos a explorar, como Bitcoin, NASDAQ, Ouro, DAX, entre outros. Essa diversidade é uma vantagem, pois se um ativo não estiver performando bem, é possível mudar para outro que esteja, evitando ficar "preso a apenas um ativo".</p>
+                <p>Como saber se um ativo está "ruim" ou "bom"? Ativos considerados bons são aqueles que possuem menos ruído nos candles. O ruído indica que um ativo está lateral, não se movendo significativamente nem para cima nem para baixo, o que exige muito cuidado ao operar.</p>
+                <p>Operar no mercado americano também abre a possibilidade de <strong>ganhar em dólar</strong>, um dos maiores atrativos para quem opera. Ao realizar operações em ativos precificados em dólar (ações, commodities ou pares de moedas no Forex), o investidor fica exposto não apenas à valorização do ativo, mas também à variação cambial. Isso significa que, além do lucro operacional, há um potencial ganho adicional caso o dólar se valorize frente ao real.</p>
+                <h3>Metodologia Operacional e Gerenciamento de Risco</h3>
+                <p>A construção de uma metodologia operacional eficaz, especialmente no contexto do mercado internacional, exige não apenas conhecimento técnico, mas também disciplina comportamental.</p>
+                <h4>Estratégia: Continuidade de Tendência</h4>
+                <p>Uma abordagem consolidada entre os operadores mais experientes é um foco maior nas operações de <strong>continuidade de tendência</strong>. Essa estratégia baseia-se em identificar e se posicionar a favor da direção predominante, evitando, mas não inviabilizando, contramovimentos que, embora possam gerar lucro significativo, tendem a oferecer mais instabilidade e riscos operacionais. No modelo apresentado, o trader escolhe, de forma consciente, evitar operações contra a tendência do mercado. Essa decisão não é apenas técnica, mas também mental: ao treinar a mente para buscar somente oportunidades a favor da direção principal dos preços, fica mais fácil manter a consistência e a disciplina nas decisões. Isso ajuda a evitar que emoções atrapalhem nos momentos em que o mercado está mais volátil ou confuso.</p>
+                <p>Um dos pilares dessa metodologia está no alinhamento de tempos gráficos. A leitura deve começar nos tempos maiores, como o Diário e 60 minutos, e descer progressivamente para os menores, 15 e 5 minutos. O objetivo é verificar a convergência das tendências e das médias móveis exponenciais e simples (notadamente as de <code>9, 20, 50, 72 e 200</code> períodos). Quando todos os tempos e médias estão alinhados em una única direção (por exemplo, tendência de alta), o operador direciona sua atenção exclusivamente para gatilhos de continuidade.</p>
+                <p>No micro, a análise técnica é mais refinada por meio da observação de estruturas clássicas de preços, como pivôs de alta e baixa, espelhamentos, retângulos e triângulos. A ativação dessas estruturas orienta os pontos de entrada com maior probabilidade de êxito. Além disso, destaca-se a importância do reconhecimento de pullbacks e da reancoragem às médias móveis, fenômenos que indicam pausas naturais no fluxo direcional do mercado e fornecem zonas técnicas de reposicionamento com risco controlado. A entrada se dá preferencialmente mediante a formação de um candle gatilho, cuja função é confirmar visualmente a retomada da tendência principal.</p>
+                <h4>Gerenciamento de Risco e Stops Técnicos</h4>
+                <p>A estrutura adota um gerenciamento de risco específico por ativo, baseado na volatilidade média de cada um. A seguir, o tamanho médio dos stops nos principais ativos operados:</p>
+                <ul><li>Bitcoin (BTC/USD): aproximadamente 250 pontos</li><li>USATEC/Nasdaq (US100): cerca de 25 pontos</li><li>Ouro (XAU/USD): entre 3 e 4 pontos; acima disso, o risco começa a comprometer o custo-benefício da operação.</li><li>G40/DAX (GER40): entre 25 e 40 pontos</li><li>EUR/USD (par de moedas Forex): entre 8 e 10 pontos</li></ul>
+                <p>A recomendação é que o trader utilize um simulador de mercado para testar o tamanho da posição e entender qual a melhor "mão" para cada ativo, explorando essa dinâmica de deslocamento de stop em função do volume financeiro envolvido. Esses testes permitem o treinamento do olhar técnico e do tempo de tela, que são fundamentais para aprimorar a leitura de mercado e a execução das ordens.</p>
+                <h4>Ajuste Fino e Gerenciamento</h4>
+                <p>Outro aspecto técnico relevante está no posicionamento estratégico do stop-loss, que deve ser ajustado de forma levemente inferior ao ponto técnico considerado ideal. Essa prática busca evitar que o operador seja retirado prematuramente da operação devido à variação do spread, ou seja, a diferença entre o preço de compra (bid) e o preço de venda (ask). É importante ressaltar que o spread varia de ativo para ativo e também sofre influência do horário de negociação, sendo normalmente maior fora dos períodos de maior liquidez.</p>
+                <p>Em relação ao gerenciamento de risco pessoal, a referência adotada pelo operador consiste em um limite diário de perda (GR) entre <strong>US$ 1.000 a US$ 1.500</strong>, aplicado sobre uma conta de US$ 100.000. Esse valor é diluído em três a quatro operações diárias, resultando em uma média de US$ 300 a US$ 500 de stop por operação. A estratégia opta por uma alavancagem controlada, que permite entradas mais robustas, sem o excesso de operações que, no longo prazo, tendem a reduzir a assertividade. Essa abordagem demonstra um equilíbrio entre exposição ao risco e preservação de capital, reforçando a importância de operar com uma metodologia clara, aliada a um controle emocional treinado para lidar com a imprevisibilidade dos mercados financeiros globais.</p>
+                <h3>Corretora e Plataforma</h3>
+                <h4>Corretora: ZeroMarkets</h4>
+                <p>Para comprar ações no mercado americano, é necessário ter conta em uma corretora estrangeira e de confiança. A equipe Xtraders possui parceria com a <strong>ZeroMarkets</strong>, uma corretora com suporte 24h humanizado e em Português (WhatsApp), que oferece os menores spreads do mercado e integração ao Black Arrow gratuitamente, caso alguns requisitos sejam cumpridos.</p>
+                <h4>Passo a Passo para Criar a Conta na ZeroMarkets:</h4>
+                <ol><li><strong>Acesse o site da ZeroMarkets:</strong> Use o link: <code>https://trader.zeromarkets.com/session/signup</code></li><li><strong>Preencha seus dados iniciais:</strong> Insira seu nome completo e e-mail.</li><li><strong>Confirme seu e-mail:</strong> Acesse a caixa de entrada do e-mail informado. Verifique o código de 6 dígitos enviado pela ZeroMarkets. Retorne ao site e insira o código de verificação.</li><li><strong>Crie sua senha de acesso:</strong> Escolha uma senha segura e fácil de lembrar.</li><li><strong>Selecione o tipo de conta:</strong> Escolha entre Conta REAL (para operar com dinheiro) ou Conta DEMO (para treinar com dinheiro virtual).</li><li><strong>Preencha seus dados pessoais:</strong> Informe seus dados conforme solicitado.</li><li><strong>Verifique sua identidade:</strong> Envie foto nítida de um dos seguintes documentos: CNH, RG (frente e verso), Passaporte, RNE ou CIE.</li><li><strong>Envie comprovante de endereço:</strong> Mesmo que resida fora do Brasil, o comprovante deve ser emitido no Brasil (Ex: conta de luz, água, telefone, fatura de cartão, etc.).</li><li><strong>Aceite os termos da plataforma:</strong> Leia e aceite os termos de uso e políticas da corretora.</li><li><strong>Preencha o questionário de perfil de investidor:</strong> São 14 questões. Siga exatamente as respostas abaixo a partir da questão 6:<ul><li>Questão 6: GERAÇÃO DE RENDA</li><li>Questão 7: ENTRE 3 E 5 ANOS</li><li>Questão 8: ESTOU DISPOSTO A ASSUMIR RISCOS ELEVADOS...</li><li>Questão 9: COMPRARIA MAIS PARA REDUZIR O PREÇO MÉDIO E...</li><li>Questão 10: EXPERIÊNCIA AVANÇADA, JÁ ESTUDEI BASTANTE...</li><li>Questão 11: EXPERIÊNCIA AVANÇADA, JÁ ESTUDEI BASTANTE...</li><li>Questão 12: EXPERIÊNCIA AVANÇADA, JÁ ESTUDEI BASTANTE...</li><li>Questão 13: BOM CONHECIMENTO, JÁ ESTUDEI SOBRE E JÁ INVESTI...</li><li>Questão 14: DIARIAMENTE</li></ul></li><li><strong>Verifique o IB (Introducing Broker):</strong> Antes de finalizar, confirme que o IB da conta é o número: <code>31439-TIME XTRADERS</code>.</li></ol>
+                <p>Pronto! Conta criada com sucesso. Após o envio de todos os documentos e preenchimento do perfil, sua conta estará aprovada e pronta para uso.</p>
+                <h4>Plataforma: Por que utilizar o BlackArrow?</h4>
+                <p>O <strong>BlackArrow</strong> é a plataforma de negociação preferencial da equipe Xtraders. Desenvolvida para o mercado internacional, ela oferece uma experiência profissional completa e muito semelhante ao que os traders brasileiros já conhecem no Profit da Nelógica, mas com foco nas operações globais. Seu custo mensal é de <strong>US$ 22</strong>, porém, esse valor pode ser totalmente isento caso o trader cumpra alguns requisitos: estar vinculado ao código IB 31439 (time xtraders), realizar um depósito mínimo de US$ 200 e, dentro do período de um mês, operar pelo menos 20 contratos de commodities ou índices, ou então 2 contratos de metais como o ouro.</p>
+                <p>Após o depósito, o BlackArrow pode ser baixado diretamente na área de downloads do site da ZeroMarkets ou através de um link enviado por e-mail. Para deixar a plataforma configurada da mesma forma que a equipe utiliza, é possível importar um arquivo padrão acessando o menu "Arquivo > Importar/Exportar configurações".</p>
+                <p>A configuração visual recomendada pela equipe Xtraders inclui fundo branco nos gráficos, candles positivos com linha branca e candles negativos com linha e preenchimento pretos. A escala logarítmica deve ser ativada, o grid vertical e horizontal removido e a marca d'água mantida ativa, facilitando a identificação do ativo em tela.</p>
+                <h4>Principais Ativos Operados:</h4>
+                <p>Você poderá operar com eficiência os principais ativos do mercado global. Os mais utilizados são:</p>
+                <ul><li>BTC/USD (Bitcoin)</li><li>USATEC/US100 (índice Nasdaq)</li><li>XAU/USD (ouro)</li><li>GER40/G40 (índice DAX da Alemanha)</li><li>EUR/USD (par de moedas Forex)</li><li>Outros ativos: XBR/USD (petróleo), HK50 (índice de Hong Kong), JP225 (índice Nikkei - Japão), UK100 (Reino Unido)</li></ul>
+                <h4>Funcionalidades e Otimizações da Plataforma</h4>
+                <p>Para garantir clareza nos custos operacionais, é fundamental ativar a visualização do spread clicando com o botão direito no gráfico e selecionando "preços bid". A diferença entre as linhas de compra e venda corresponde ao spread da operação. Também é essencial ativar a barra de estudos, acessada pelo botão direito no gráfico, para inserir ferramentas como Fibonacci, retângulos e linhas de tendência. Para otimizar a visualização dos ativos, recomenda-se o agrupamento dos gráficos. Isso é feito clicando no círculo com três pontos e selecionando o mesmo grupo (exemplo: Grupo 1) para todas as janelas. Além disso, é importante manter ativada a exibição de dividendos, juros e bonificações para uma leitura completa dos ativos.</p>
+                <p>A plataforma ainda conta com a função "Relógio de mercado", acessível no menu "Ferramentas", que mostra os horários de abertura e fechamento das principais bolsas do mundo, algo essencial para entender os momentos de maior liquidez e volatilidade. É possível também alterar a moeda de visualização dos resultados, por exemplo, de dólar para real, diretamente na parte superior da plataforma.</p>
+                <p>Outro recurso muito utilizado pela equipe Xtraders é a função de cálculo de stop e gain. Através da barra lateral, basta acessar "estratégia > personalizadas", configurar os valores desejados em dinheiro e, ao pressionar Shift, a plataforma exibirá exatamente até onde o mercado precisa se movimentar para atingir os alvos definidos, facilitando o cálculo do lote ideal.</p>
+                <p>Por fim, para deixar o ambiente de operação mais limpo e funcional, recomenda-se manter apenas os botões essenciais visíveis: compra a mercado, venda a mercado, zerar, cancelar e zerar tudo. Dessa forma, o BlackArrow se torna uma plataforma objetiva, eficiente e totalmente alinhada com o estilo operacional da equipe Xtraders.</p>
+                <h3>Como Identificar Notícias Relevantes</h3>
+                <p>Para identificar notícias relevantes que podem impactar suas decisões no mercado financeiro, o <strong>Calendário Econômico do site Investing.com</strong> é uma das ferramentas mais úteis e acessíveis. Ele permite acompanhar, em tempo real, os principais eventos e indicadores econômicos globais que influenciam diretamente a volatilidade dos ativos especialmente no mercado internacional.</p>
+                <p>Ao acessar o site Investing.com, vá até a aba "Calendário Econômico". Lá, você verá uma lista com os eventos programados para o dia, incluindo hora de divulgação, país de origem, importância esperada e tipo de indicador (inflação, desemprego, PIB, etc.). Para facilitar a leitura e evitar ruídos desnecessários, o ideal é filtrar por eventos de alta relevância. No canto superior da tabela, há ícones de "touro" que representam o impacto esperado da notícia:</p>
+                <ul><li>1 touro: baixo impacto</li><li>2 touros: impacto moderado</li><li><strong>3 touros: alto impacto</strong></li></ul>
+                <p>Você deve dar atenção máxima aos eventos marcados com <strong>3 touros</strong>, pois são esses que tendem a causar forte volatilidade nos ativos especialmente os índices (como US100, S&P 500), moedas (como EUR/USD), ouro e petróleo. Entre as notícias mais relevantes, destacam-se especialmente as relacionadas a:</p>
+                <ul><li><strong>Taxa de juros (Interest Rate Decision):</strong> Decisões de política monetária dos principais bancos centrais (Fed, BCE, BoE, etc.) têm alto impacto, pois afetam diretamente a liquidez e o custo do dinheiro no mundo. Uma elevação ou corte inesperado pode provocar movimentos bruscos no dólar, ouro, índices e renda variável.</li><li><strong>Reuniões do FOMC (Federal Open Market Committee):</strong> Publicação da ata ou falas de dirigentes do Fed costumam gerar especulação sobre os próximos passos da taxa de juros nos EUA.</li><li><strong>Dados de inflação (CPI, PPI):</strong> A inflação guia as decisões dos bancos centrais. Números acima ou abaixo do esperado podem antecipar ajustes na taxa de juros.</li><li><strong>Dados de emprego (Payroll, Taxa de desemprego):</strong> O relatório de empregos dos EUA, conhecido como Payroll, é um dos dados mensais mais aguardados. Pode mudar drasticamente o rumo do mercado no dia da divulgação.</li><li><strong>PIB (Produto Interno Bruto):</strong> Mostra o crescimento da economia. Um resultado inesperado pode afetar perspectivas de juros e risco-país.</li></ul>
+                <div class="video-embed-container" data-video-id="o7MdPkAjUfc"><h4>🎥 Aula: Introdução ao Mercado Americano</h4><img src="https://i.imgur.com/sdO8Y5b.jpeg" alt="Thumbnail da aula sobre mercado americano" class="video-thumbnail" onerror="this.onerror=null;this.src='https://placehold.co/640x360/000000/FFFFFF?text=Thumbnail+Indisponível';"><div class="play-icon"></div></div>
+                <div class="chapter-navigation"><a href="#mercado-brasileiro" class="nav-button next">Próximo Capítulo</a></div>
+            </section>
+            <section id="mercado-brasileiro" class="content-section market-br">
+                <h2><img src="https://flagcdn.com/w80/br.png" class="title-flag" alt="Bandeira do Brasil"> Mercado Brasileiro</h2>
+                <div class="audio-player-container"><h4>🎧 Áudio: Resumo do Mercado Brasileiro</h4><audio controls><source src="https://www.dropbox.com/scl/fi/26bp8bkgikmdnltzdoh2t/olp60-bv6xc.mp3?rlkey=nl6w79lgcoka46fvt6ekz5x06&st=8st2weld&dl=1" type="audio/mpeg">Seu navegador não suporta o elemento de áudio.</audio></div>
+                <h3>Entendendo o Cenário: O Mercado Brasileiro (B3)</h3>
+                <p>No Brasil, o mercado de capitais é centralizado na B3 (Brasil, Bolsa, Balcão). Considerada a principal infraestrutura de mercado financeiro do país, a B3 é uma das maiores do mundo em valor de mercado e concentra a negociação de ações de empresas de renome nacional e a custódia da grande maioria dos títulos emitidos no país. Diferente do mercado americano com bolsas distintas por perfil de empresa, a B3 centraliza a negociação de companhias de todos os setores, com destaques para empresas de commodities, como Vale e Petrobras, e grandes instituições financeiras, como Itaú Unibanco e Bradesco.</p>
+                <h4>Principais Índices da B3</h4>
+                <p>Os principais índices de ações que representam o desempenho das empresas brasileiras são:</p>
+                <ul><li><strong>Ibovespa (IBOV):</strong> É o principal indicador de desempenho do mercado de ações brasileiro. Representa uma carteira teórica com as ações mais negociadas e representativas da B3, sendo o termômetro da saúde econômica e do humor dos investidores em relação ao Brasil.</li><li><strong>IBrX 100 (Índice Brasil 100):</strong> Composto pelas 100 ações de maior negociabilidade e representatividade do mercado de capitais brasileiro. Oferece uma visão um pouco mais ampla que o Ibovespa.</li><li><strong>SMLL (Índice Small Cap):</strong> Acompanha o desempenho das empresas de menor capitalização de mercado (Small Caps), que geralmente possuem maior potencial de crescimento, mas também maior volatilidade.</li><li><strong>IDIV (Índice de Dividendos):</strong> Reúne as empresas que se destacam por serem boas pagadoras de dividendos, sendo um índice importante para investidores com foco em geração de renda.</li></ul>
+                <h3>A Linguagem do Gráfico: Análise Técnica Fundamental</h3>
+                <h4>O que é um Candlestick e por qual motivo ele se movimenta?</h4>
+                <p>Imagine um candlestick como um "Raio-X" do preço de algum ativo (seja ele uma ação, índice, etc.) dentro de um período específico. Esse período pode ser de 1 minuto, 5 minutos, 1 hora, 1 dia, 1 semana e assim por diante. Ele mostra visualmente 4 informações essenciais: o preço de abertura, o preço de fechamento, o preço máximo e o preço mínimo. A movimentação do candle ocorre pela lei da oferta e demanda (compradores vs. vendedores). Quando a força compradora é maior, o preço sobe (candle de alta). Quando a força vendedora é maior, o preço cai (candle de baixa).</p>
+                <h4>Médias Móveis: Como usar para identificar a direção?</h4>
+                <p>O conceito principal das médias móveis é "suavizar" o preço, como um filtro de ruído. Elas calculam o preço médio de um ativo ao longo de um número específico de períodos e traçam essa média como uma linha no gráfico. Existem dois tipos principais:</p>
+                <ul><li><strong>Média Móvel Simples (MMS ou SMA):</strong> Soma os preços de fechamento dos últimos "X" candles e divide por "X". Todos os preços têm o mesmo peso, tornando-a mais "lenta".</li><li><strong>Média Móvel Exponencial (MME ou EMA):</strong> Dá mais peso aos preços mais recentes, tornando-a mais "rápida" e reativa. É a preferida da maioria dos traders.</li></ul>
+                <h3>Foco Operacional: Day Trade com Minicontratos</h3>
+                <h4>Vantagens e Particularidades de Operar no Mercado Brasileiro</h4>
+                <ul><li><strong>Renda Fixa Atrativa:</strong> O histórico de taxas de juros (Taxa Selic) elevadas no Brasil torna a renda fixa uma das mais rentáveis do mundo.</li><li><strong>Alta Volatilidade para Day Trade:</strong> Ativos como o mini-índice (WIN) e o minidólar (WDO) possuem alta volatilidade diária, o que atrai operadores que buscam lucrar com movimentos rápidos de preço.</li></ul>
+                <h4>Operando Mini-Índice (WIN) e Mini-Dólar (WDO)</h4>
+                <p>Minicontratos são contratos futuros usados para especular sobre a direção de um índice ou do câmbio em um curtíssimo prazo.</p>
+                <ul><li><strong>Mini-Índice (WIN):</strong> Permite operar com base na expectativa da pontuação futura do Índice Ibovespa.</li><li><strong>Mini-Dólar (WDO):</strong> Permite operar a variação do dólar americano frente ao real.</li></ul>
+                <p><strong>Comparativo com os EUA:</strong> O mercado americano é o maior em contratos futuros. O equivalente ao nosso WIN são os futuros do S&P 500 (E-mini S&P 500, /ES) e da Nasdaq (E-mini Nasdaq 100, /NQ). A lógica é a mesma, mas o volume e a liquidez nos EUA são imensamente superiores.</p>
+                <h3>Execução Prática: Da Conta Aberta ao Gerenciamento de Risco</h3>
+                <h4>Escolhendo sua Corretora e Plataforma</h4>
+                <p>Para operar no mercado brasileiro, é necessário ter conta em uma corretora nacional autorizada. Usando como exemplo a GENIAL INVESTIMENTOS, o processo de abertura de conta é totalmente digital e rápido. A plataforma de negociação profissional mais utilizada no Brasil é o Profit Pro. Uma vantagem de operar com a corretora do exemplo é que, ao contratar a plataforma através da GENIAL INVESTIMENTOS e realizar ao menos uma negociação em minicontratos (WIN ou WDO) ao mês, a mensalidade do Profit Pro se torna totalmente gratuita.</p>
+                <h4>Passo a Passo para Abrir sua Conta na Genial Investimentos</h4>
+                <ol><li><strong>Acesse o Canal Oficial:</strong> Vá até o site ou aplicativo oficial da Genial Investimentos.</li><li><strong>Inicie o Cadastro:</strong> Clique em "Abra sua conta" e preencha seus dados iniciais (Nome, e-mail, celular, CPF).</li><li><strong>Preencha seus Dados Pessoais:</strong> Data de nascimento, nome da mãe, dados do documento de identificação.</li><li><strong>Informe seu Endereço:</strong> Preencha seu endereço completo.</li><li><strong>Forneça Dados Financeiros e Profissionais:</strong> Profissão, renda mensal e patrimônio.</li><li><strong>Envie seus Documentos:</strong> Foto nítida de um documento de identificação (CNH/RG) e um comprovante de endereço recente.</li><li><strong>Responda ao Questionário de Perfil (Suitability):</strong> É obrigatório e fundamental que seu perfil seja Arrojado para operar minicontratos.</li><li><strong>Crie suas Senhas:</strong> Senha de Acesso e Assinatura Eletrônica.</li><li><strong>Aguarde a Aprovação:</strong> Pode levar de algumas horas a um ou dois dias úteis.</li><li><strong>Altere sua Assessoria para "Genial B2B 4" (Recomendado):</strong> Com a conta aprovada, acesse "Minha Conta" ou "Meu Assessor" para realizar a troca. Uma boa assessoria oferece suporte direto e ajuda a resolver problemas operacionais.</li><li><strong>Transfira o Dinheiro para Investir:</strong> A transferência (TED ou PIX) deve ser feita de uma conta bancária de mesma titularidade (mesmo CPF).</li></ol>
+                <h4>Definindo seu Risco: Stops para Cada Ativo</h4>
+                <ul><li><strong>Mini-Índice (WIN):</strong> Stops (ordens para limitar a perda) de aproximadamente 150 a 200 pontos.</li><li><strong>Mini-Dólar (WDO):</strong> Stops entre 4 e 6 pontos.</li><li><strong>Ações (PETR4, VALE3):</strong> Stop geralmente definido em percentual (ex: 1% a 2%) ou com base em suportes técnicos.</li></ul>
+                <h3>Gerenciamento de Risco: A Chave para a Sobrevivência no Mercado</h3>
+                <p>Ter uma estratégia para entrar em uma operação é importante, mas ter uma estratégia para sair dela especialmente quando está errada é o que garantirá sua permanência no mercado.</p>
+                <h4>O Pilar Central: Relação Capital por Contrato (Tamanho da Posição)</h4>
+                <p>Uma forma direta de gerenciar o risco é definir quanto capital você precisa ter em conta para operar cada minicontrato, com base no seu perfil.</p>
+                <ul><li><strong>Para um Perfil Agressivo:</strong><ul><li>Mini-Índice (WIN): Alocar R$ 1.000,00 por cada 1 contrato.</li><li>Mini-Dólar (WDO): Alocar R$ 2.000,00 por cada 1 contrato.</li></ul></li><li><strong>Para um Perfil Conservador:</strong><ul><li>Mini-Índice (WIN): Alocar R$ 2.000,00 por cada 1 contrato.</li><li>Mini-Dólar (WDO): Alocar R$ 4.000,00 por cada 1 contrato.</li></ul></li></ul>
+                <h4>A Ferramenta Essencial: O Stop-Loss Técnico</h4>
+                <p>O stop-loss é a ordem de proteção para encerrar uma operação perdedora em um ponto técnico predefinido. Após definir o número de contratos e o stop, você sabe exatamente quanto está arriscando.</p>
+                <h4>A Matemática do Lucro: Relação Risco/Retorno</h4>
+                <p>Seus ganhos precisam ser maiores que suas perdas. Só entre em operações onde o potencial de ganho é, no mínimo, o dobro do seu risco. A relação mínima recomendada é 2 para 1 (2:1).</p>
+                <h4>O Limite Diário: Saiba a Hora de Parar</h4>
+                <p>Defina um limite máximo de perda diária e respeite-o. Ao atingir o valor, desligue a plataforma para evitar o "revenge trading" (operar por emoção para tentar recuperar perdas). O limite pode ser um valor financeiro fixo (ex: R$ 200) ou um número de stops seguidos.</p>
+                <div class="chapter-navigation"><a href="#mercado-americano" class="nav-button prev">Capítulo Anterior</a><a href="#criptoativos" class="nav-button next">Próximo Capítulo</a></div>
+            </section>
+            <section id="criptoativos" class="content-section market-crypto">
+                <h2>🪙 Criptoativos</h2>
+                <div class="audio-player-container"><h4>🎧 Áudio: Introdução aos Criptoativos</h4><audio controls><source src="https://www.dropbox.com/scl/fi/8615m71gfm293cw2a9gax/09zqt-8w7nm.mp3?rlkey=p4ggvqiu98cpqm9oy69a8wqmy&st=f5rg6qs2&dl=1" type="audio/mpeg">Seu navegador não suporta o elemento de áudio.</audio></div>
+                <h3>O que são Criptomoedas?</h3>
+                <p>Criptomoedas são ativos digitais descentralizados, sobre os quais governos e bancos centrais não possuem controle. Elas utilizam a tecnologia blockchain para realizar transações seguras e transparentes. O principal objetivo por trás da criação das criptomoedas foi permitir a realização de transações financeiras sem a necessidade de intermediários, como bancos ou instituições governamentais. Para garantir a segurança, essas moedas digitais utilizam algoritmos de criptografia avançada que asseguram a integridade, confidencialidade e autenticidade das transações.</p>
+                <p>Entre suas principais características está a acessibilidade global, permitindo que qualquer pessoa com acesso à internet envie ou receba criptoativos sem burocracia. Outro ponto fundamental é a imutabilidade, pois uma vez que uma transação é confirmada na blockchain, ela não pode ser apagada ou alterada. Embora todas as transações sejam públicas, os usuários permanecem anônimos, com cada movimentação vinculada a um endereço alfanumérico (chave pública) sem associação direta com dados pessoais.</p>
+                <h3>História do Bitcoin</h3>
+                <p>O conceito de criptomoedas ganhou vida em 2008 com a criação do Bitcoin (BTC) por um autor anônimo conhecido como Satoshi Nakamoto. Seu surgimento ocorreu em meio à crise financeira global de 2008 como resposta à centralização do sistema bancário. A proposta era criar um sistema peer-to-peer onde qualquer pessoa pudesse transferir valor diretamente para outra, sem depender de instituições financeiras. As operações são registradas em uma blockchain, que funciona como um grande livro-razão público e imutável. O primeiro bloco, minerado em 3 de janeiro de 2009, é conhecido como Genesis Block e continha uma mensagem do jornal The Times criticando o sistema financeiro tradicional.</p>
+                <p>A rede é mantida pelo mecanismo de Proof of Work (PoW), um processo chamado mineração, que requer alto poder computacional para validar blocos de transações e criar novos bitcoins. A recompensa pela mineração diminui pela metade a cada 210.000 blocos (aproximadamente a cada quatro anos) em um evento chamado halving. Atualmente (2024), essa recompensa é de 3,125 BTC por bloco, e após o próximo halving, previsto para abril de 2028, cairá para 1,5625 BTC. Satoshi estabeleceu que apenas 21 milhões de bitcoins poderão existir, com o último sendo minerado por volta de 2140. Em 22 de maio de 2010, ocorreu a primeira compra real com a moeda: 10.000 BTC foram usados para comprar duas pizzas, evento hoje conhecido como Pizza Day. Atualmente, o Bitcoin é visto por muitos como o "ouro digital", uma reserva de valor e proteção contra a inflação.</p>
+                <h3>O que é e como funciona uma Blockchain</h3>
+                <p>A blockchain é uma cadeia de blocos interligados, onde cada bloco armazena um conjunto de transações. Cada bloco contém três elementos essenciais: os dados da transação, o hash do próprio bloco (uma "impressão digital" única) e o hash do bloco anterior, conectando-os de forma sequencial e segura. A validação das transações é realizada por mecanismos de consenso. O Proof of Work (PoW), usado pelo Bitcoin, envolve mineradores competindo para resolver problemas matemáticos complexos. Já o Proof of Stake (PoS), usado por redes como Ethereum 2.0, exige que os validadores "travem" uma quantidade de criptomoedas como garantia. O modelo PoS é mais eficiente em termos de consumo de energia. A tecnologia blockchain também viabiliza o uso de contratos inteligentes, NFTs (Tokens Não Fungíveis) e o setor de finanças descentralizadas (DeFi).</p>
+                <h3>Principais 4 Ativos</h3>
+                <p>O principal indicador para identificar a relevância de uma criptomoeda é seu valor de mercado (Marketcap). Sites especializados como CoinMarketCap e CoinGecko fornecem esses dados. Os 4 principais ativos são:</p>
+                <ul><li><strong>Bitcoin (BTC):</strong> Possui um marketcap de US$2,09T e um volume de US$40,74B.</li><li><strong>Ethereum (ETH):</strong> Lançado em 2013, é a principal plataforma para smart contracts, com um MarketCap de $304,9B e volume diário de $13,19B.</li><li><strong>Tether (USDT):</strong> É a principal stablecoin do mercado, lastreada em dólar, com um portal de transparência sobre suas reservas.</li><li><strong>Solana (SOL):</strong> Lançada em 2020, foca em alta escalabilidade e baixas taxas. Possui um Market Cap estimado em US$ 73,5 bilhões e um volume diário de negociação de aproximadamente US$ 2,4 bilhões.</li></ul>
+                <h3>Exchange</h3>
+                <p>Exchanges são plataformas para negociar criptomoedas. A <strong>Binance</strong> é uma das maiores do mundo, oferecendo segurança com 2FA, armazenamento em carteiras frias e um fundo de seguro (SAFU). A <strong>Coinbase</strong> é popular entre iniciantes, armazena 98% dos fundos em carteiras frias e é regulamentada nos EUA. A <strong>Kraken</strong> é uma das mais antigas e respeitáveis, conhecida por sua segurança robusta e por publicar relatórios de provas de reserva. Outras exchanges de renome incluem Gemini, Bitstamp, Huobi e OKX. Atualmente, a Binance continua sendo a mais usada no mundo.</p>
+                <h3>Armazenamento das suas Criptos</h3>
+                <h4>Cold Wallets (Carteiras Frias)</h4>
+                <p>Uma cold wallet é uma carteira física e offline que oferece alto nível de segurança por não estar conectada à internet. Exemplos incluem Ledger e Trezor, sendo indicadas para armazenamento a longo prazo. Elas dão ao usuário controle total sobre seus ativos. As desvantagens incluem a menor praticidade para transações rápidas, o risco físico de perda ou dano do dispositivo, o custo do hardware e a responsabilidade total do usuário pela segurança da frase de recuperação.</p>
+                <h4>Hot Wallets (Carteiras Quentes)</h4>
+                <p>Hot wallets são ferramentas digitais constantemente conectadas à internet, o que facilita transações rápidas e o acesso aos fundos. Elas podem ser aplicativos para celular, extensões de navegador ou softwares de desktop. As mais conhecidas são Trust Wallet, MetaMask e a wallet da Binance. Por estarem sempre online, as hot wallets apresentam um nível de segurança inferior em comparação com as cold wallets, estando vulneráveis a hackers, malwares e golpes. São ideais para armazenar pequenas quantias ou para uso diário.</p>
+                <h3>Custódia</h3>
+                <p>Custódia refere-se ao processo de proteção dos ativos digitais. Os custodiantes não armazenam os ativos em si, mas sim as chaves privadas que concedem acesso a eles. Existem duas formas principais: autocustódia e custódia de terceiros.</p>
+                <p>Na <strong>autocustódia</strong>, o próprio usuário assume total responsabilidade pelo armazenamento seguro de sua chave privada, conferindo autonomia total. Já na <strong>custódia de terceiros</strong>, instituições especializadas guardam as chaves privadas em nome dos clientes. Essa modalidade é recomendada para quem não deseja assumir diretamente a responsabilidade pela segurança. Existem três categorias de custodiantes terceirizados: exchanges centralizadas, gestores de ativos digitais e bancos tradicionais. Deixar os ativos em exchanges implica que o usuário não detém a chave privada, resumido pela máxima "not your keys, not your coins". A custódia de terceiros envolve custos como taxa de custódia, de configuração e de retirada. A desvantagem é a renúncia parcial ao controle dos ativos e riscos como congelamento de contas ou falência da instituição.</p>
+                <h3>Tributação</h3>
+                <p>No Brasil, não existe uma lei específica para a tributação de criptomoedas. A Receita Federal considera esses ativos como bens ou direitos, que devem ser declarados no Imposto de Renda. A forma de cobrança depende do tipo de operação. No caso de venda com lucro, é preciso calcular o ganho de capital, que é a diferença entre o valor de venda e o de compra da moeda. O lucro pode ser tributado com alíquotas que vão de 15% a 22,5%. O imposto é recolhido por meio do programa da Receita Federal, na seção "Ganhos de Capital", e o valor deve ser pago até o prazo da última parcela do IR.</p>
+                <div class="chapter-navigation"><a href="#mercado-brasileiro" class="nav-button prev">Capítulo Anterior</a><a href="#quizzes" class="nav-button next">Próximo Capítulo</a></div>
+            </section>
+            <section id="quizzes" class="content-section">
+                <h2>✅ Quizzes de Aprendizagem</h2>
+                <div class="quiz-container">
+                    <details><summary class="us-theme">Prova: Mercado Americano 🇺🇸</summary><form class="quiz-form" id="quiz-americano"><div class="questions-wrapper"></div><button type="submit">Verificar Respostas</button><div class="quiz-result"></div></form></details>
+                    <details><summary class="br-theme">Prova: Mercado Brasileiro (B3) 🇧🇷</summary><form class="quiz-form" id="quiz-brasileiro"><div class="questions-wrapper"></div><button type="submit">Verificar Respostas</button><div class="quiz-result"></div></form></details>
+                    <details><summary class="crypto-theme">Prova: Criptoativos 🪙</summary><form class="quiz-form" id="quiz-cripto"><div class="questions-wrapper"></div><button type="submit">Verificar Respostas</button><div class="quiz-result"></div></form></details>
+                </div>
+                <div class="chapter-navigation"><a href="#criptoativos" class="nav-button prev">Capítulo Anterior</a></div>
+            </section>
+        </main>
+    </div>
+
+    <div id="chat-fab">💬</div>
+    <div id="chat-popup">
+        <div class="chat-header">
+            <span>Assistente "Do Zero Absoluto"</span>
+            <span id="close-chat">✖</span>
+        </div>
+        <div id="chat-messages">
+            <div class="message ai-message">Olá! Estou à disposição para tirar suas dúvidas sobre o material de apoio 'Inicie do absoluto zero'. Para uma resposta mais rápida e direta, sinta-se à vontade para usar uma das perguntas prontas abaixo!</div>
+        </div>
+        <div id="quick-questions">
+            </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Digite sua dúvida...">
+            <button id="send-btn">Enviar</button>
+        </div>
+    </div>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // --- Modelo 1: Lógica de Detecção de Dispositivo ---
+    function verificarDispositivo() {
+      if (window.innerWidth <= 800) { 
+        console.log("A tela tem o tamanho de um dispositivo móvel.");
+        // O CSS já está cuidando do layout responsivo com @media queries.
+        // Funções específicas para mobile poderiam ser chamadas aqui.
+      } else {
+        console.log("A tela tem o tamanho de um desktop.");
+        // Funções específicas para desktop poderiam ser chamadas aqui.
+      }
+    }
+
+    // Verificar quando a página carrega
+    verificarDispositivo();
+
+    // Verificar também quando a janela é redimensionada
+    window.onresize = verificarDispositivo;
+
+
+    // --- Lógica para Player de Vídeo Embutido ---
+    document.querySelectorAll('.video-embed-container').forEach(container => {
+        container.addEventListener('click', () => {
+            const videoId = container.getAttribute('data-video-id');
+            const iframeHtml = `
+                <div class="video-player-wrapper">
+                    <iframe 
+                        src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" 
+                        frameborder="0" 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                        allowfullscreen>
+                    </iframe>
+                </div>`;
+            container.innerHTML = iframeHtml;
+        }, { once: true });
+    });
+
+    // --- Lógica dos Quizzes ---
+    const quizzes = {
+        americano: {
+            questions: [
+                { q: "Qual índice representa as 500 maiores empresas dos EUA?", a: ["Nasdaq Composite", "Nasdaq-100", "S&P 500", "Dow Jones", "Russell 2000"], correct: 2 },
+                { q: "O que é o Nasdaq-100?", a: ["Índice com ações da NYSE", "Índice focado apenas em bancos", "Índice das 500 maiores empresas", "Índice das 100 maiores empresas não financeiras da Nasdaq", "Índice de commodities"], correct: 3 },
+                { q: "Qual é a principal vantagem de operar no mercado americano?", a: ["Isenção de impostos", "Ganhos em dólar e maior liquidez", "Custos operacionais mais altos", "Menor volatilidade", "Ausência de risco cambial"], correct: 1 },
+                { q: "O que é o USATEC/US100?", a: ["CFD que representa o índice Nasdaq-100", "Um ETF brasileiro", "Índice de petróleo americano", "Ações da Tesla", "Índice do setor bancário dos EUA"], correct: 0 },
+                { q: "O que é o spread?", a: ["Comissão da corretora", "Taxa fixa de operação", "Diferença entre preço de compra e venda", "Lucro líquido da operação", "Valor da margem"], correct: 2 },
+                { q: "Quais ativos são mais negociados nos EUA?", a: ["Ações da B3", "ETFs europeus", "Commodities brasileiras", "Nasdaq, Bitcoin, Ouro, EUR/USD", "Fundos de pensão"], correct: 3 },
+                { q: "Qual a plataforma citada para operar nos EUA com suporte em português?", a: ["MetaTrader 4", "BlackArrow via ZeroMarkets", "Profit Pro", "XP Trader", "Binance"], correct: 1 },
+                { q: "O que é FOMC?", a: ["Índice de ações", "Comitê Federal de Mercado Aberto do Fed", "Exchange de criptomoedas", "Agência de rating", "Plataforma de negociação"], correct: 1 },
+                { q: "Quais são os horários de maior liquidez no mercado americano (horário de Brasília)?", a: ["8h às 9h", "12h às 14h", "10h30 às 12h e 15h30 às 17h", "18h às 20h", "22h às 0h"], correct: 2 },
+                { q: "O que indica o CPI americano?", a: ["Crescimento do PIB", "Desemprego", "Inflação ao consumidor", "Balança comercial", "Política monetária"], correct: 2 }
+            ]
+        },
+        brasileiro: {
+            questions: [
+                { q: "O que é a B3?", a: ["Agência de regulação de bancos", "Bolsa oficial de valores do Brasil", "Empresa de investimentos em petróleo", "Banco Central", "Fundo imobiliário"], correct: 1 },
+                { q: "O que o Ibovespa representa?", a: ["Taxa Selic", "Principais ações da B3", "Moeda do Brasil", "Preço do dólar futuro", "PIB nacional"], correct: 1 },
+                { q: "O que é o contrato WIN?", a: ["Ação da Petrobras", "Minicontrato do índice Bovespa", "ETF de commodities", "Fundo de dividendos", "Título do Tesouro"], correct: 1 },
+                { q: "O que é o contrato WDO?", a: ["Minicontrato da Vale", "Ação do dólar", "Minicontrato do dólar", "Fundo cambial", "ETF internacional"], correct: 2 },
+                { q: "Qual é a função das médias móveis?", a: ["Calcular o IR", "Suavizar o preço e indicar tendência", "Medir liquidez", "Avaliar spread", "Mostrar a margem exigida"], correct: 1 },
+                { q: "O que representa o índice IDIV?", a: ["Índice de empresas pequenas", "Lucros do setor de energia", "Empresas com bom histórico de dividendos", "Índice de ações do exterior", "Carteira teórica de fundos"], correct: 2 },
+                { q: "O que é um stop-loss técnico?", a: ["Ordem para encerrar uma operação com base em análise gráfica", "Ordem para realizar lucro", "Alvo de entrada", "Média móvel de reversão", "Indicador de volume"], correct: 0 },
+                { q: "Qual plataforma é mais utilizada para operar na B3?", a: ["Binance", "Profit Pro", "BlackArrow", "MetaTrader 4", "Trust Wallet"], correct: 1 },
+                { q: "O que significa operar vendido?", a: ["Comprar com alavancagem", "Investir em renda fixa", "Apostar na queda do ativo", "Vender ações físicas", "Vender derivativos em carteira"], correct: 2 },
+                { q: "Qual o valor médio de stop no mini índice?", a: ["500 pontos", "150 a 200 pontos", "10 pontos", "300 a 400 pontos", "20 pontos"], correct: 1 }
+            ]
+        },
+        cripto: {
+            questions: [
+                { q: "O que são criptomoedas?", a: ["Moedas físicas com lastro em ouro", "Ativos digitais descentralizados baseados em blockchain", "Cartões pré-pagos internacionais", "Ações de empresas de tecnologia", "Moedas do governo digital"], correct: 1 },
+                { q: "Qual a principal função do Bitcoin?", a: ["Moeda nacional de El Salvador", "Reserva de valor descentralizada", "Gateway de pagamentos", "Token da Ethereum", "Moeda para jogos"], correct: 1 },
+                { q: "Quem é Satoshi Nakamoto?", a: ["CEO da Binance", "Criador do Bitcoin (identidade desconhecida)", "Regra de consenso", "Dono da blockchain", "Fundador da Coinbase"], correct: 1 },
+                { q: "O que é blockchain?", a: ["Banco de dados público e imutável que registra transações", "Sistema bancário europeu", "Moeda de jogos online", "Software de análise gráfica", "Rede de IPFS"], correct: 0 },
+                { q: "O que é Proof of Work?", a: ["Modo de converter real em cripto", "Mecanismo de validação via poder computacional", "Prova de transação digital", "Sistema de auditoria bancária", "Protocolo de recuperação de senha"], correct: 1 },
+                { q: "O que significa “Not your keys, not your coins”?", a: ["Seu saldo está sempre em blockchain", "Se você não tem a chave privada, não controla seus criptoativos", "Todas as chaves são públicas", "Frase usada por exchanges", "Significa backup de carteira"], correct: 1 },
+                { q: "O que é uma hot wallet?", a: ["Carteira conectada à internet", "Cold wallet com backup", "Plataforma de mineração", "Exchange de criptomoedas", "Dispositivo físico"], correct: 0 },
+                { q: "Qual a principal stablecoin do mercado?", a: ["Bitcoin", "Ethereum", "Tether (USDT)", "Litecoin", "Solana"], correct: 2 },
+                { q: "Como a Receita Federal trata as criptomoedas no Brasil?", a: ["Como moeda estrangeira", "Como bens ou direitos que devem ser declarados", "Como renda variável", "Como isentas de tributos", "Como previdência privada"], correct: 1 },
+                { q: "O que é uma DAO?", a: ["Exchange descentralizada", "Organização autônoma gerida por contratos inteligentes", "Nome da blockchain da Ethereum", "Protocolo de NFT", "Carteira virtual multichave"], correct: 1 }
+            ]
+        }
+    };
+
+    document.querySelectorAll('.quiz-form').forEach(form => {
+        const quizId = form.id.split('-')[1];
+        const quizData = quizzes[quizId];
+        const questionsWrapper = form.querySelector('.questions-wrapper');
+        const resultDiv = form.querySelector('.quiz-result');
+
+        questionsWrapper.innerHTML = ''; // Limpa as perguntas antigas antes de adicionar novas
+
+        quizData.questions.forEach((item, index) => {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'quiz-question';
+            questionDiv.innerHTML = `<p>${index + 1}. ${item.q}</p>`;
+            
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'quiz-options';
+
+            item.a.forEach((option, optionIndex) => {
+                const label = document.createElement('label');
+                label.innerHTML = `<input type="radio" name="question${index}" value="${optionIndex}"> ${option}`;
+                optionsDiv.appendChild(label);
+            });
+
+            questionDiv.appendChild(optionsDiv);
+            questionsWrapper.appendChild(questionDiv);
+        });
+        
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            let score = 0;
+            const totalQuestions = quizData.questions.length;
+            
+            quizData.questions.forEach((item, index) => {
+                const selected = form.querySelector(`input[name="question${index}"]:checked`);
+                const labels = form.querySelectorAll(`input[name="question${index}"]`);
+                
+                labels.forEach(label => {
+                    label.parentElement.classList.remove('correct', 'incorrect');
+                });
+
+                if (selected) {
+                    const answer = parseInt(selected.value);
+                    const correctIndex = item.correct;
+
+                    if (answer === correctIndex) {
+                        score++;
+                        selected.parentElement.classList.add('correct');
+                    } else {
+                        selected.parentElement.classList.add('incorrect');
+                        labels[correctIndex].parentElement.classList.add('correct');
+                    }
+                }
+            });
+
+            resultDiv.innerHTML = `Você acertou ${score} de ${totalQuestions} questões!`;
+            resultDiv.style.color = score > totalQuestions / 2 ? 'var(--success-color)' : 'var(--danger-color)';
+        });
+    });
+
+    // --- LÓGICA DO CHATBOT ---
+    const chatFab = document.getElementById('chat-fab');
+    const chatPopup = document.getElementById('chat-popup');
+    const closeChatBtn = document.getElementById('close-chat');
+    const sendBtn = document.getElementById('send-btn');
+    const chatInput = document.getElementById('chat-input');
+    const chatMessages = document.getElementById('chat-messages');
+    const quickQuestionsContainer = document.getElementById('quick-questions');
+    
+    const knowledgeBase = new Map();
+    const allQuestions = [];
+
+    function addQA(question, answer) {
+        const normalizedQuestion = question.toLowerCase().replace(/[?:.,]/g, '').trim();
+        knowledgeBase.set(normalizedQuestion, answer);
+        allQuestions.push(question);
+    }
+    
+    // Base de conhecimento do chatbot...
+    (function populateKnowledgeBase() {
+        addQA("O que são criptomoedas?", "São moedas digitais descentralizadas que utilizam blockchain para garantir transações seguras, sem a necessidade de intermediários como bancos.");
+        addQA("Como surgiu o Bitcoin?", "Foi criado em 2008 por Satoshi Nakamoto como resposta à crise financeira, com a proposta de um sistema financeiro descentralizado.");
+        addQA("O que é a B3 e como ela funciona?", "A B3 é a bolsa de valores oficial do Brasil. Nela são negociados ativos como ações, contratos futuros, opções e derivativos. Ela também centraliza a liquidação, custódia e registro de operações.");
+        addQA("Como funciona a bolsa de valores nos Estados Unidos?", "É dividida em diferentes bolsas, como Nasdaq (tecnologia) e NYSE (tradicional). Cada uma segue regras específicas e negocia ativos de empresas listadas.");
+
+    })();
+    
+
+    function updateQuickQuestions() {
+        quickQuestionsContainer.innerHTML = '';
+        const shuffled = [...allQuestions].sort(() => 0.5 - Math.random());
+        const selectedQuestions = shuffled.slice(0, 8);
+        selectedQuestions.forEach(q => {
+            const btn = document.createElement('button');
+            btn.className = 'quick-question-btn';
+            btn.textContent = q;
+            quickQuestionsContainer.appendChild(btn);
+        });
+    }
+
+    chatFab.addEventListener('click', () => {
+        chatPopup.classList.add('show-chat');
+        chatFab.style.display = 'none';
+        updateQuickQuestions();
+    });
+
+    closeChatBtn.addEventListener('click', () => {
+        chatPopup.classList.remove('show-chat');
+        chatFab.style.display = 'flex';
+    });
+
+    sendBtn.addEventListener('click', () => handleSendMessage());
+    chatInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault(); 
+            handleSendMessage();
+        }
+    });
+    
+    quickQuestionsContainer.addEventListener('click', (e) => {
+        if (e.target.classList.contains('quick-question-btn')) {
+            const questionText = e.target.textContent;
+            handleSendMessage(questionText);
+        }
+    });
+
+    function handleSendMessage(text = null) {
+        const userText = text || chatInput.value.trim();
+        if (userText === '') return;
+
+        displayMessage(userText, 'user');
+        if(!text) {
+           chatInput.value = '';
+        }
+
+        setTimeout(() => {
+            const aiResponse = getAIResponse(userText);
+            displayMessage(aiResponse, 'ai');
+            updateQuickQuestions();
+            quickQuestionsContainer.style.display = 'flex';
+        }, 600);
+    }
+
+    function displayMessage(message, sender) {
+        const messageElement = document.createElement('div');
+        messageElement.classList.add('message', `${sender}-message`);
+        messageElement.textContent = message;
+        chatMessages.appendChild(messageElement);
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function getAIResponse(question) {
+        const q = question.toLowerCase().replace(/[?:.,]/g, '').trim();
+        const escapeHatchResponse = `Essa dúvida é bastante específica e técnica. Para te ajudar de forma completa e aprofundada, recomendamos que você participe do nosso curso exclusivo START 2.0.\n\n📘 Nele, você vai aprender tudo o que precisa para operar com segurança e estratégia, desde o básico até técnicas avançadas em B3, mercado americano e criptoativos.\n\n👉 Acesse agora: https://xt-xtraders.com.br/le-start`;
+        const followUp = "\n\nPosso ajudar com algo mais?";
+
+        if (knowledgeBase.has(q)) {
+            return knowledgeBase.get(q) + followUp;
+        }
+
+        return escapeHatchResponse;
+    }
+});
+</script>
+</body>
+</html>
