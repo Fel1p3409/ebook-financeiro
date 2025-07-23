@@ -125,7 +125,7 @@
       console.log("Scripts do e-book e chatbot inicializados!");
 
       // --- LÓGICA DO ACCORDION (GAVETAS) ---
-      const drawers = document.querySelectorAll('#main-content details');
+      const drawers = document.querySelectorAll('#main-content > details');
       drawers.forEach((drawer) => {
         drawer.addEventListener('toggle', (event) => {
           // Se esta gaveta foi aberta, feche todas as outras.
@@ -143,7 +143,7 @@
       document.querySelectorAll('.video-embed-container').forEach(container => {
         container.addEventListener('click', () => {
           const videoId = container.getAttribute('data-video-id');
-          const iframeHtml = `<div class="video-player-wrapper"><iframe src="http://googleusercontent.com/youtube.com/2{videoId}?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+          const iframeHtml = `<div class="video-player-wrapper"><iframe src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
           container.innerHTML = iframeHtml;
         }, {
           once: true
@@ -384,44 +384,36 @@
       }
 
       const knowledgeBase = {
-        "Criptoativos": {
-          "O que são criptomoedas?": "➡ Ativos digitais descentralizados que utilizam a tecnologia blockchain para garantir segurança, transparência e independência de intermediários.",
-          "O que é Bitcoin?": "➡ Primeira criptomoeda criada, em 2008, por Satoshi Nakamoto como resposta à crise financeira.",
-          "Quem é Satoshi Nakamoto?": "➡ Pseudônimo do criador do Bitcoin; sua identidade verdadeira é desconhecida.",
-          "O que é blockchain?": "➡ Cadeia de blocos que armazena transações de forma imutável e distribuída.",
-        },
-        "Mercado Brasileiro": {
-          "O que é a B3?": "➡ Bolsa de Valores oficial do Brasil.",
-          "O que é o Ibovespa?": "➡ Principal índice da B3, com ações mais negociadas.",
-        },
-        "Mercado Americano": {
-          "O que é a Nasdaq?": "➡ Bolsa americana focada em empresas de tecnologia.",
-          "O que é o S&P 500?": "➡ Índice das 500 maiores empresas de capital aberto dos EUA.",
-        }
+          "Criptoativos": {
+              "O que são criptomoedas?": "➡ Ativos digitais descentralizados que utilizam a tecnologia blockchain para garantir segurança, transparência e independência de intermediários.",
+              "O que é Bitcoin?": "➡ Primeira criptomoeda criada, em 2008, por Satoshi Nakamoto como resposta à crise financeira."
+          },
+          "Mercado Brasileiro": {
+              "O que é a B3?": "➡ Bolsa de Valores oficial do Brasil.",
+              "O que é o Ibovespa?": "➡ Principal índice da B3, com ações mais negociadas."
+          },
+          "Mercado Americano": {
+              "O que é a Nasdaq?": "➡ Bolsa americana focada em empresas de tecnologia.",
+              "O que é o S&P 500?": "➡ Índice das 500 maiores empresas de capital aberto dos EUA."
+          }
       };
 
       async function getChatbotResponse(theme, question) {
-        const themeKB = knowledgeBase[theme];
-
-        if (themeKB && themeKB[question]) {
-          return themeKB[question];
-        }
-
-        if (model) {
-          try {
-            const prompt = `Você é um assistente virtual amigável e especialista em finanças. O usuário está no tópico '${theme}'. Responda à pergunta de forma clara e concisa: "${question}"`;
-
-            const result = await model.generateContent(prompt);
-            const response = await result.response;
-            return response.text();
-
-          } catch (error) {
-            console.error("Erro ao contatar a API do Gemini:", error);
-            return "Desculpe, estou com um problema para me conectar. Tente novamente mais tarde.";
+          const themeKB = knowledgeBase[theme];
+          if (themeKB && themeKB[question]) {
+              return themeKB[question];
           }
-        } else {
-          return "Não encontrei uma resposta para essa pergunta. A funcionalidade de IA não está ativa.";
-        }
+          if (model) {
+              try {
+                  const prompt = `Você é um assistente virtual especialista em finanças. Responda à pergunta sobre '${theme}' de forma clara: "${question}"`;
+                  const result = await model.generateContent(prompt);
+                  const response = await result.response;
+                  return response.text();
+              } catch (error) {
+                  return "Desculpe, ocorreu um erro ao contatar a IA.";
+              }
+          }
+          return "Não encontrei uma resposta. A IA não está ativa.";
       }
 
       function addChatMessage(text, sender) {
@@ -429,20 +421,14 @@
         bubble.className = `chat-bubble max-w-md md:max-w-lg p-3 rounded-xl ${sender === 'user' ? 'chat-bubble-user self-end bg-blue-600 text-white' : 'chat-bubble-bot self-start bg-gray-700 text-gray-300'}`;
         bubble.textContent = text;
         chatMessages.appendChild(bubble);
-        scrollToChatBottom();
-      }
-
-      function scrollToChatBottom() {
         chatMessages.scrollTop = chatMessages.scrollHeight;
       }
 
       async function handleChatSend(messageText) {
         const userMessage = messageText.trim();
         if (userMessage === '') return;
-
         addChatMessage(userMessage, 'user');
         chatInput.value = '';
-
         const botResponse = await getChatbotResponse(currentTheme, userMessage);
         addChatMessage(botResponse, 'bot');
       }
@@ -454,11 +440,11 @@
           chatWindowDiv.style.display = 'flex';
           chatTitle.textContent = currentTheme;
           chatMessages.innerHTML = '';
-          addChatMessage("Olá! Sobre o que você gostaria de saber dentro deste tópico?", 'bot');
+          addChatMessage(`Olá! Bem-vindo ao assistente sobre ${currentTheme}. Como posso ajudar?`, 'bot');
           chatInput.focus();
         });
       });
-
+      
       backBtn.addEventListener('click', () => {
         chatWindowDiv.style.display = 'none';
         themeSelectionDiv.style.display = 'block';
@@ -484,24 +470,22 @@
           score += parseInt(value);
         }
 
-        let profile = '',
-          profileDescription = '',
-          profileColorClass = '';
+        let profile = '', profileDescription = '', profileColorClass = '';
 
-        if (score <= 16) {
-          profile = 'Conservador';
-          profileDescription = 'Você prioriza a segurança e a preservação do seu capital.';
-          profileColorClass = 'profile-conservative';
-        } else if (score <= 23) {
-          profile = 'Moderado';
-          profileDescription = 'Você busca um equilíbrio entre segurança e rentabilidade.';
-          profileColorClass = 'profile-moderate';
-        } else {
-          profile = 'Arrojado';
-          profileDescription = 'Você tem alta tolerância ao risco e busca a máxima rentabilidade.';
-          profileColorClass = 'profile-aggressive';
+        if (score <= 16) { 
+            profile = 'Conservador';
+            profileDescription = 'Você prioriza a segurança e a preservação do seu capital. Seu foco é evitar perdas, mesmo que isso signifique uma rentabilidade menor. Produtos de baixo risco são os mais indicados para você.';
+            profileColorClass = 'profile-conservative';
+        } else if (score <= 23) { 
+            profile = 'Moderado';
+            profileDescription = 'Você busca um equilíbrio entre segurança e rentabilidade. Aceita correr alguns riscos de forma controlada para obter ganhos maiores no médio e longo prazo, diversificando seus investimentos.';
+            profileColorClass = 'profile-moderate';
+        } else { 
+            profile = 'Arrojado';
+            profileDescription = 'Você tem alta tolerância ao risco e busca a máxima rentabilidade. Entende que a volatilidade faz parte do processo para alcançar maiores ganhos e está preparado para possíveis perdas no curto prazo.';
+            profileColorClass = 'profile-aggressive';
         }
-
+        
         resultDiv.innerHTML = `<h4 class="text-xl font-bold mb-2">Seu Perfil: <span class="${profileColorClass}">${profile}</span></h4><p>${profileDescription}</p>`;
         resultDiv.style.display = 'block';
       });
@@ -523,7 +507,7 @@
             updateProgress();
           });
         });
-
+        
         updateProgress();
       });
     }
@@ -534,79 +518,69 @@
     let particles = [];
 
     function resizeCanvas() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
     }
     resizeCanvas();
 
     class Particle {
-      constructor(x, y, directionX, directionY, size, color) {
-        this.x = x;
-        this.y = y;
-        this.directionX = directionX;
-        this.directionY = directionY;
-        this.size = size;
-        this.color = color;
-      }
-      draw() {
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
-        ctx.fillStyle = this.color;
-        ctx.fill();
-      }
-      update() {
-        if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
-        if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
-        this.x += this.directionX;
-        this.y += this.directionY;
-        this.draw();
-      }
+        constructor(x, y, directionX, directionY, size, color) {
+            this.x = x; this.y = y; this.directionX = directionX; this.directionY = directionY; this.size = size; this.color = color;
+        }
+        draw() {
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2, false);
+            ctx.fillStyle = this.color;
+            ctx.fill();
+        }
+        update() {
+            if (this.x > canvas.width || this.x < 0) this.directionX = -this.directionX;
+            if (this.y > canvas.height || this.y < 0) this.directionY = -this.directionY;
+            this.x += this.directionX;
+            this.y += this.directionY;
+            this.draw();
+        }
     }
 
     function init() {
-      particles = [];
-      let numberOfParticles = (canvas.height * canvas.width) / 9000;
-      for (let i = 0; i < numberOfParticles; i++) {
-        let size = (Math.random() * 2) + 1;
-        let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
-        let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
-        let directionX = (Math.random() * .4) - .2;
-        let directionY = (Math.random() * .4) - .2;
-        particles.push(new Particle(x, y, directionX, directionY, size, 'rgba(173, 216, 230, 0.5)'));
-      }
+        particles = [];
+        let numberOfParticles = (canvas.height * canvas.width) / 9000;
+        for (let i = 0; i < numberOfParticles; i++) {
+            let size = (Math.random() * 2) + 1;
+            let x = (Math.random() * ((innerWidth - size * 2) - (size * 2)) + size * 2);
+            let y = (Math.random() * ((innerHeight - size * 2) - (size * 2)) + size * 2);
+            let directionX = (Math.random() * .4) - .2;
+            let directionY = (Math.random() * .4) - .2;
+            particles.push(new Particle(x, y, directionX, directionY, size, 'rgba(173, 216, 230, 0.5)'));
+        }
     }
 
     function connect() {
-      let opacityValue = 1;
-      for (let a = 0; a < particles.length; a++) {
-        for (let b = a; b < particles.length; b++) {
-          let distance = ((particles[a].x - particles[b].x) * (particles[a].x - particles[b].x)) +
-            ((particles[a].y - particles[b].y) * (particles[a].y - particles[b].y));
-          if (distance < (canvas.width / 7) * (canvas.height / 7)) {
-            opacityValue = 1 - (distance / 20000);
-            ctx.strokeStyle = `rgba(173, 216, 230, ${opacityValue})`;
-            ctx.lineWidth = 1;
-            ctx.beginPath();
-            ctx.moveTo(particles[a].x, particles[a].y);
-            ctx.lineTo(particles[b].x, particles[b].y);
-            ctx.stroke();
-          }
+        let opacityValue = 1;
+        for (let a = 0; a < particles.length; a++) {
+            for (let b = a; b < particles.length; b++) {
+                let distance = ((particles[a].x - particles[b].x) * (particles[a].x - particles[b].x)) + ((particles[a].y - particles[b].y) * (particles[a].y - particles[b].y));
+                if (distance < (canvas.width / 7) * (canvas.height / 7)) {
+                    opacityValue = 1 - (distance / 20000);
+                    ctx.strokeStyle = `rgba(173, 216, 230, ${opacityValue})`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(particles[a].x, particles[a].y);
+                    ctx.lineTo(particles[b].x, particles[b].y);
+                    ctx.stroke();
+                }
+            }
         }
-      }
     }
 
     function animate() {
-      requestAnimationFrame(animate);
-      ctx.clearRect(0, 0, innerWidth, innerHeight);
-      particles.forEach(p => p.update());
-      connect();
+        requestAnimationFrame(animate);
+        ctx.clearRect(0, 0, innerWidth, innerHeight);
+        particles.forEach(p => p.update());
+        connect();
     }
-
-    window.addEventListener('resize', () => {
-      resizeCanvas();
-      init();
-    });
-
+    
+    window.addEventListener('resize', () => { resizeCanvas(); init(); });
     init();
     animate();
   </script>
@@ -649,7 +623,7 @@
       background-color: #020412;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       min-height: 100vh;
       overflow-y: auto;
     }
@@ -676,7 +650,8 @@
       box-sizing: border-box;
       margin: 1rem;
     }
-
+     .login-box h2 { margin-top: 0; font-size: 1.8em; }
+    .login-box p { margin-bottom: 20px; color: #ccc; }
     .login-box input,
     .login-box button {
       width: 100%;
@@ -703,6 +678,7 @@
     #sign-in-button {
       background-color: var(--gemini-purple);
     }
+    #sign-in-button:hover { background-color: #7a3a9b; }
 
     .message {
       margin-top: 15px;
@@ -713,12 +689,16 @@
     }
 
     .message.error {
-      background-color: rgba(220, 53, 69, 0.5);
+      color: #fff; background-color: rgba(220, 53, 69, 0.5);
     }
 
     .message.success {
-      background-color: rgba(40, 167, 69, 0.5);
+      color: #fff; background-color: rgba(40, 167, 69, 0.5);
     }
+    #forgot-password-link {
+        color: #ccc; text-decoration: none; font-size: 0.9em; margin-top: 10px; display: inline-block;
+    }
+    #forgot-password-link:hover { text-decoration: underline; }
 
     #ebook-content {
       display: none;
@@ -752,7 +732,7 @@
     }
 
     /* ESTILOS DAS GAVETAS (ACCORDION) */
-    #main-content details {
+    #main-content>details {
       background: var(--glass-bg);
       border: 1px solid var(--glass-border);
       border-radius: 12px;
@@ -760,11 +740,11 @@
       transition: all 0.3s ease;
     }
 
-    #main-content details:hover {
+    #main-content>details:hover {
       border-color: rgba(255, 255, 255, 0.3);
     }
 
-    #main-content details[open] {
+    #main-content>details[open] {
       background: rgba(15, 15, 25, 0.7);
     }
 
@@ -778,14 +758,12 @@
       font-weight: bold;
       color: var(--text-light);
       list-style: none;
-      /* Remove a seta padrão */
       font-family: 'Poppins', sans-serif;
       transition: background-color 0.2s;
     }
 
     #main-content summary::-webkit-details-marker {
       display: none;
-      /* Oculta seta no Chrome/Safari */
     }
 
     #main-content summary:hover {
@@ -793,22 +771,27 @@
     }
 
     #main-content summary::after {
-      /* Ícone personalizado '+' e '-' */
       content: '+';
       margin-left: auto;
       font-size: 2em;
       font-weight: 200;
+      line-height: 1;
       transition: transform 0.3s ease;
     }
 
     #main-content details[open]>summary::after {
       content: '−';
-      transform: rotate(180deg);
     }
 
     .drawer-content {
       padding: 0 1.5rem 1.5rem 1.5rem;
       border-top: 1px solid var(--glass-border);
+      animation: fadeInDrawer 0.5s ease-out;
+    }
+
+    @keyframes fadeInDrawer {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
     }
 
     .title-flag {
@@ -818,151 +801,70 @@
     }
 
     /* Cores temáticas para as gavetas */
-    summary.us-theme {
-      color: #a9c7ff;
-    }
-
-    summary.br-theme {
-      color: #a6ffcb;
-    }
-
-    summary.crypto-theme {
-      color: var(--crypto-yellow);
-    }
-
-    summary.profile-theme {
-      color: #6dd5ed;
-    }
-
-    summary.quiz-theme {
-      color: var(--gemini-purple);
-    }
+    summary.us-theme { color: #a9c7ff; }
+    summary.br-theme { color: #a6ffcb; }
+    summary.crypto-theme { color: var(--crypto-yellow); }
+    summary.profile-theme { color: #6dd5ed; }
+    summary.quiz-theme { color: var(--gemini-purple); }
 
     /* Estilos do conteúdo interno */
     .content-section {
-      background: none;
-      border: none;
-      padding: 0;
-      margin: 0;
-      box-shadow: none;
-      backdrop-filter: none;
+        background: none; border: none; padding: 20px 0 0 0; margin: 0;
+        box-shadow: none; backdrop-filter: none; animation: none;
     }
 
     .content-section h3 {
-      font-size: 1.6em;
-      margin-top: 30px;
-      padding-bottom: 10px;
-      border-bottom: 2px solid;
+      font-size: 1.6em; margin-top: 30px; padding-bottom: 10px; border-bottom: 2px solid;
     }
+    .content-section p, .content-section li { color: #ddd; line-height: 1.7; }
+    .content-section ul { list-style-position: inside; padding-left: 0; }
+    #mercado-americano h3 { border-color: var(--us-red); }
+    #mercado-brasileiro h3 { border-color: var(--br-yellow); }
+    #criptoativos h3 { border-color: var(--crypto-yellow); }
+    strong { color: white; }
+    code { font-family: 'Roboto Mono', monospace; background-color: rgba(255,255,255,0.1); padding: 3px 6px; border-radius: 4px;}
 
-    #mercado-americano h3 {
-      border-color: var(--us-red);
+    .video-embed-container, .audio-player-container, .interactive-checklist, .quiz-container, .metrics-grid {
+      margin-top: 30px; margin-bottom: 20px;
     }
+    
+    .video-embed-container { max-width: 640px; margin-left: auto; margin-right: auto; }
+    .video-player-wrapper { position: relative; padding-bottom: 56.25%; height: 0; }
+    .video-player-wrapper iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%;}
+    .audio-player-container { padding: 20px; background: rgba(0,0,0,0.2); border-radius: 10px; }
+    audio { width: 100%; }
+    .metrics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
+    .metric-card { background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)); border: 1px solid var(--glass-border); border-radius: 10px; padding: 15px; text-align: center; min-height: 130px; display: flex; flex-direction: column; justify-content: center;}
 
-    #mercado-brasileiro h3 {
-      border-color: var(--br-yellow);
-    }
+    /* Quiz e Checklist */
+    .quiz-question { margin-bottom: 25px; }
+    .quiz-options label { display: block; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 8px; cursor: pointer;}
+    .quiz-options label:hover { background-color: rgba(255,255,255,0.1); }
+    .quiz-form button[type="submit"] { display: block; width: 100%; padding: 15px; font-size: 1.2em; background: var(--gemini-purple); color: white; border: none; border-radius: 8px; cursor: pointer; margin-top: 20px;}
+    .correct { background-color: rgba(40, 167, 69, 0.3) !important; }
+    .incorrect { background-color: rgba(220, 53, 69, 0.3) !important; }
+    .interactive-checklist { padding: 20px; background: rgba(0,0,0,0.2); border-radius: 10px;}
+    .progress-bar-container { width: 100%; background-color: rgba(0,0,0,0.3); border-radius: 5px; margin-bottom: 15px; }
+    .progress-bar-fill { height: 10px; width: 0%; background-color: var(--gemini-purple); border-radius: 5px; transition: width 0.4s ease-in-out; }
+    .checklist-item { display: block; background-color: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; margin-bottom: 8px; border-left: 4px solid #555; cursor: pointer; transition: all 0.2s; }
+    .checklist-item.completed { border-left-color: var(--success-color); background-color: rgba(40, 167, 69, 0.15); }
+    .checklist-item.completed span { text-decoration: line-through; color: #888; }
 
-    #criptoativos h3 {
-      border-color: var(--crypto-yellow);
-    }
 
-    /* Outros estilos que permanecem */
-    code {
-      font-family: 'Roboto Mono', monospace;
-      background-color: rgba(255, 255, 255, 0.1);
-      padding: 3px 6px;
-      border-radius: 4px;
-    }
-
-    .video-embed-container,
-    .audio-player-container,
-    .interactive-checklist,
-    .quiz-container,
-    .metrics-grid {
-      margin-top: 30px;
-    }
-
-    /* Estilos do Chatbot (sem alterações significativas) */
-    @keyframes pulse {
-      0% {
-        box-shadow: 0 0 0 0 rgba(142, 68, 173, 0.7);
-      }
-      100% {
-        box-shadow: 0 0 0 15px rgba(142, 68, 173, 0);
-      }
-    }
-
-    #chat-fab {
-      position: fixed;
-      bottom: 30px;
-      right: 30px;
-      background-color: var(--gemini-purple);
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 30px;
-      cursor: pointer;
-      z-index: 999;
-      animation: pulse 2s infinite;
-    }
-
-    #chat-popup {
-      position: fixed;
-      bottom: 100px;
-      right: 30px;
-      width: 400px;
-      max-width: 90vw;
-      height: 600px;
-      max-height: 75vh;
-      background: rgba(10, 25, 47, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 15px;
-      display: none;
-      flex-direction: column;
-      z-index: 1000;
-      opacity: 0;
-      transition: opacity 0.3s ease, transform 0.3s ease;
-      transform: translateY(10px);
-    }
-
-    #chat-popup.show-chat {
-      display: flex;
-      opacity: 1;
-      transform: translateY(0);
-    }
+    /* Estilos do Chatbot */
+    @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(142, 68, 173, 0.7); } 100% { box-shadow: 0 0 0 15px rgba(142, 68, 173, 0); } }
+    #chat-fab { position: fixed; bottom: 30px; right: 30px; background-color: var(--gemini-purple); width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer; z-index: 999; animation: pulse 2s infinite; }
+    #chat-popup { position: fixed; bottom: 100px; right: 30px; width: 400px; max-width: 90vw; height: 600px; max-height: 75vh; background: rgba(10, 25, 47, 0.95); backdrop-filter: blur(10px); border-radius: 15px; display: none; flex-direction: column; z-index: 1000; opacity: 0; transition: opacity 0.3s ease, transform 0.3s ease; transform: translateY(10px); }
+    #chat-popup.show-chat { display: flex; opacity: 1; transform: translateY(0); }
 
     /* Responsividade */
     @media (max-width: 800px) {
-      body {
-        align-items: flex-start;
-      }
-      #ebook-content {
-        padding: 1rem 0.5rem;
-      }
-      #main-content summary {
-        font-size: 1.2em;
-        padding: 1rem;
-      }
-      .drawer-content {
-        padding: 0 1rem 1rem 1rem;
-      }
-      .content-section h3 {
-        font-size: 1.3em;
-      }
-      #chat-fab {
-        width: 55px;
-        height: 55px;
-      }
-      #chat-popup {
-        inset: 10px;
-        width: auto;
-        height: auto;
-        max-height: 85vh;
-      }
+      #ebook-content { padding: 1rem 0.5rem; }
+      #main-content summary { font-size: 1.2em; padding: 1rem; }
+      .drawer-content { padding: 0 1rem 1rem 1rem; }
+      .content-section h3 { font-size: 1.3em; }
+      #chat-fab { width: 55px; height: 55px; }
+      #chat-popup { inset: 10px; width: auto; height: auto; max-height: 85vh; }
     }
   </style>
 </head>
@@ -972,6 +874,7 @@
 
   <div id="login-screen">
     <div class="login-box">
+      <img src="https://i.imgur.com/r4BC2Qz.png" alt="Logo Xtraders" style="width: 150px; margin-bottom: 20px;">
       <h2>Acesso ao E-book</h2>
       <p>Faça login para continuar.</p>
       <input type="email" id="email-input" placeholder="Digite o seu e-mail">
@@ -1019,58 +922,236 @@
                 </div>
               </div>
             </div>
+            <div class="audio-player-container">
+              <h4>🎧 Áudio: Resumo do Mercado Americano</h4><audio controls><source src="https://www.dropbox.com/scl/fi/8615m71gfm293cw2a9gax/09zqt-8w7nm.mp3?rlkey=p4ggvqiu98cpqm9oy69a8wqmy&st=f5rg6qs2&dl=1" type="audio/mpeg">Seu navegador não suporta áudio.</audio>
+            </div>
+            <p>O mercado financeiro americano é um ambiente dinâmico e altamente estruturado... (e assim por diante)</p>
             <h3>Bolsas de Valores e Índices</h3>
-            <p>A bolsa de valores americana é considerada a maior e mais influente do mundo...</p>
+            <h4>As Bolsas de Valores Americanas</h4>
+            <p>A bolsa de valores americana é considerada a maior e mais influente do mundo, abrigando companhias de capital aberto de renome global. A <strong>Nasdaq</strong> é quase inteiramente voltada para empresas de tecnologia, com destaques como Apple, Netflix, Meta (Facebook), Google (Alphabet), Amazon e Microsoft. A capitalização total de mercado das empresas negociadas nas bolsas americanas ultrapassa <strong>US$ 25 triliões</strong>, evidenciando a magnitude e influência global desse mercado.</p>
+            <h4>Principais Índices Americanos</h4>
+            <ul>
+              <li><strong>Nasdaq Composite:</strong> Um índice amplo que reúne aproximadamente 3.000 empresas listadas na Nasdaq, sendo cerca de 60% do setor de tecnologia, refletindo a força da inovação e da transformação digital nos Estados Unidos.</li>
+              <li><strong>Nasdaq-100:</strong> Composto pelas 100 maiores empresas não financeiras listadas na Nasdaq, este índice é altamente concentrado em empresas de tecnologia e consumo, servindo como termómetro das companhias de maior crescimento e capitalização na bolsa.</li>
+              <li><strong>S&P 500 (Standard & Poor's 500):</strong> Representa as 500 maiores empresas de capital aberto dos Estados Unidos, englobando diversos setores da economia, e é considerado o índice mais representativo da saúde económica americana.</li>
+              <li><strong>Dow Jones Industrial Average (DJIA):</strong> Acompanha o desempenho de 30 das maiores e mais influentes empresas dos EUA, sendo um dos índices mais antigos e simbólicos do mercado financeiro global, com foco em empresas consolidadas e de grande reputação.</li>
+            </ul>
+            <h3>Vantagens de Operar no Mercado Internacional</h3>
+            <p>O mercado americano possui um maior volume quando comparado com a B3, o que resulta em excelentes movimentos. Também oferece uma diversidade de ativos a explorar, como Bitcoin, NASDAQ, Ouro, DAX, entre outros.</p>
+            <p>Operar no mercado americano também abre a possibilidade de <strong>ganhar em dólar</strong>, um dos maiores atrativos para quem opera.</p>
+            <h3>Metodologia Operacional e Gestão de Risco</h3>
+            <h4>Estratégia: Continuidade de Tendência</h4>
+            <p>A abordagem consolidada é focar em operações de <strong>continuidade de tendência</strong>, identificando e posicionando-se a favor da direção predominante. Um dos pilares dessa metodologia está no alinhamento de tempos gráficos (Diário, 60m, 15m, 5m), verificando a convergência das tendências e das médias móveis (<code>9, 20, 50, 72 e 200</code>).</p>
+            <h4>Gestão de Risco e Stops Técnicos</h4>
+            <p>A gestão de risco é específica por ativo:</p>
+            <ul>
+              <li>Bitcoin (BTC/USD): ~250 pontos</li>
+              <li>Nasdaq (US100): ~25 pontos</li>
+              <li>Ouro (XAU/USD): 3 a 4 pontos</li>
+            </ul>
+            <h3>Corretora e Plataforma</h3>
+            <h4>Corretora: ZeroMarkets</h4>
+            <p>A equipa Xtraders possui parceria com a <strong>ZeroMarkets</strong>, uma corretora com suporte em Português e integração ao Black Arrow.</p>
+            <h4>Passo a Passo Interativo: Criar Conta na ZeroMarkets</h4>
+            <div class="interactive-checklist">
+                <div class="progress-bar-container"><div class="progress-bar-fill"></div></div>
+                <label class="checklist-item"><input type="checkbox"><span>Aceder ao site da ZeroMarkets através do link de parceiro.</span></label>
+                <label class="checklist-item"><input type="checkbox"><span>Preencher dados iniciais e confirmar o e-mail.</span></label>
+                <label class="checklist-item"><input type="checkbox"><span>Enviar documento de identificação e comprovativo de morada.</span></label>
+                <label class="checklist-item"><input type="checkbox"><span>Preencher o questionário de perfil (Suitability).</span></label>
+                <label class="checklist-item"><input type="checkbox"><span>Confirmar se o código IB é <strong>31439-TIME XTRADERS</strong>.</span></label>
+            </div>
+            <div class="video-embed-container" data-video-id="o7MdPkAjUfc">
+                <h4>🎥 Aula: Introdução ao Mercado Americano</h4><img src="https://i.imgur.com/sdO8Y5b.jpeg" alt="Thumbnail da aula sobre mercado americano" class="video-thumbnail">
+                <div class="play-icon"></div>
+            </div>
           </section>
         </div>
       </details>
-
+      
       <details>
         <summary class="br-theme"><img src="https://flagcdn.com/w40/br.png" class="title-flag" alt="Bandeira do Brasil"> Mercado Brasileiro</summary>
         <div class="drawer-content">
           <section id="mercado-brasileiro" class="content-section market-br">
+             <div class="metrics-grid">
+                <div class="metric-card">
+                  <div class="tradingview-widget-container" style="height:100%; width:100%">
+                    <div class="tradingview-widget-container__widget" style="height:100%; width:100%"></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+                      { "symbol": "BMFBOVESPA:IBOV", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
+                    </script>
+                  </div>
+                </div>
+                <div class="metric-card">
+                   <div class="tradingview-widget-container" style="height:100%; width:100%">
+                    <div class="tradingview-widget-container__widget" style="height:100%; width:100%"></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+                      { "symbol": "FX_IDC:USDBRL", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
+                    </script>
+                  </div>
+                </div>
+            </div>
             <h3>Entendendo o Cenário: O Mercado Brasileiro (B3)</h3>
-            <p>No Brasil, o mercado de capitais é centralizado na B3 (Brasil, Bolsa, Balcão)...</p>
+            <p>No Brasil, o mercado de capitais é centralizado na B3 (Brasil, Bolsa, Balcão). Diferente do mercado americano, a B3 centraliza a negociação de companhias de todos os setores, como Vale e Petrobras, e grandes instituições financeiras.</p>
+            <h4>Principais Índices da B3</h4>
+            <ul>
+                <li><strong>Ibovespa (IBOV):</strong> O principal indicador de desempenho do mercado de ações brasileiro.</li>
+                <li><strong>IBrX 100 (Índice Brasil 100):</strong> Composto pelas 100 ações de maior negociabilidade.</li>
+                <li><strong>SMLL (Índice Small Cap):</strong> Acompanha o desempenho das empresas de menor capitalização.</li>
+                <li><strong>IDIV (Índice de Dividendos):</strong> Reúne as empresas que se destacam por serem boas pagadoras de dividendos.</li>
+            </ul>
+             <h4>Passo a Passo Interativo: Abrir Conta na Genial</h4>
+            <div class="interactive-checklist">
+                <div class="progress-bar-container"><div class="progress-bar-fill"></div></div>
+                <label class="checklist-item"><input type="checkbox"><span>Aceder ao site ou app oficial da Genial Investimentos.</span></label>
+                <label class="checklist-item"><input type="checkbox"><span>Clicar em "Abra a sua conta" e preencher dados iniciais.</span></label>
+                <label class="checklist-item"><input type="checkbox"><span>Enviar fotos de documento e comprovativo de morada.</span></label>
+                <label class="checklist-item"><input type="checkbox"><span>Responder ao questionário de perfil "Arrojado".</span></label>
+                <label class="checklist-item"><input type="checkbox"><span>Com a conta aprovada, alterar a assessoria para <strong>Genial B2B 4</strong>.</span></label>
+            </div>
           </section>
         </div>
       </details>
-
+      
       <details>
         <summary class="crypto-theme">🪙 Criptoativos</summary>
         <div class="drawer-content">
           <section id="criptoativos" class="content-section market-crypto">
+            <div class="metrics-grid">
+                <div class="metric-card">
+                   <div class="tradingview-widget-container" style="height:100%; width:100%">
+                    <div class="tradingview-widget-container__widget" style="height:100%; width:100%"></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+                      { "symbol": "BITSTAMP:BTCUSD", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
+                    </script>
+                  </div>
+                </div>
+                <div class="metric-card">
+                   <div class="tradingview-widget-container" style="height:100%; width:100%">
+                    <div class="tradingview-widget-container__widget" style="height:100%; width:100%"></div>
+                    <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
+                      { "symbol": "BITSTAMP:ETHUSD", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
+                    </script>
+                  </div>
+                </div>
+            </div>
             <h3>O que são Criptomoedas?</h3>
-            <p>Criptomoedas são ativos digitais descentralizados...</p>
+            <p>Criptomoedas são ativos digitais descentralizados, sobre os quais governos e bancos centrais não possuem controlo. Elas utilizam a tecnologia blockchain para realizar transações seguras e transparentes.</p>
+            <h3>História do Bitcoin</h3>
+            <p>O conceito de criptomoedas ganhou vida em 2008 com a criação do Bitcoin (BTC) por um autor anónimo conhecido como Satoshi Nakamoto. O seu surgimento ocorreu em meio à crise financeira global de 2008 como resposta à centralização do sistema bancário.</p>
+            <h3>Armazenamento das suas Criptos</h3>
+            <h4>Cold Wallets (Carteiras Frias)</h4>
+            <p>Uma cold wallet é uma carteira física e offline que oferece alto nível de segurança. Exemplos incluem Ledger e Trezor.</p>
+            <h4>Hot Wallets (Carteiras Quentes)</h4>
+            <p>Hot wallets são ferramentas digitais conectadas à internet, o que facilita transações rápidas. As mais conhecidas são Trust Wallet e MetaMask.</p>
           </section>
         </div>
       </details>
-
+      
       <details>
         <summary class="profile-theme">🤔 Perfil de Investidor</summary>
         <div class="drawer-content">
           <section id="perfil-investidor" class="content-section">
-            <p>Entender a sua tolerância ao risco é o primeiro passo...</p>
+            <p>Entender a sua tolerância ao risco é o primeiro passo para uma jornada de investimentos bem-sucedida. Este questionário, similar ao <strong>Suitability</strong> exigido pelas corretoras, ajudá-lo-á a ter uma ideia clara do seu perfil. Responda com sinceridade!</p>
             <form id="profile-quiz-form" class="quiz-form">
-              <button type="submit">Ver o Meu Perfil</button>
-              <div id="profile-quiz-result" class="quiz-result" style="display: none;"></div>
+                <div class="questions-wrapper">
+                    <div class="quiz-question">
+                        <p>1. Qual é o seu principal objetivo ao investir?</p>
+                        <div class="quiz-options">
+                            <label><input type="radio" name="q1" value="1" required> Preservar meu patrimônio, evitando perdas a todo custo.</label>
+                            <label><input type="radio" name="q1" value="2" required> Equilibrar segurança com uma boa rentabilidade.</label>
+                            <label><input type="radio" name="q1" value="3" required> Maximizar os ganhos, mesmo que signifique correr riscos elevados.</label>
+                        </div>
+                    </div>
+                    <div class="quiz-question">
+                        <p>2. Por quanto tempo você pretende manter seus investimentos?</p>
+                        <div class="quiz-options">
+                            <label><input type="radio" name="q2" value="1" required> Curto prazo (até 2 anos).</label>
+                            <label><input type="radio" name="q2" value="2" required> Médio prazo (de 2 a 5 anos).</label>
+                            <label><input type="radio" name="q2" value="3" required> Longo prazo (mais de 5 anos).</label>
+                        </div>
+                    </div>
+                    <div class="quiz-question">
+                        <p>3. Seus investimentos perdem 20% do valor. Qual sua atitude?</p>
+                        <div class="quiz-options">
+                            <label><input type="radio" name="q3" value="1" required> Venderia tudo para não perder mais.</label>
+                            <label><input type="radio" name="q3" value="2" required> Manteria a posição, pois entendo que o mercado oscila.</label>
+                            <label><input type="radio" name="q3" value="3" required> Compraria mais, aproveitando o "preço baixo".</label>
+                        </div>
+                    </div>
+                    <div class="quiz-question">
+                        <p>4. Qual sua familiaridade com renda variável?</p>
+                        <div class="quiz-options">
+                            <label><input type="radio" name="q4" value="1" required> Nenhuma ou muito baixa.</label>
+                            <label><input type="radio" name="q4" value="2" required> Média. Conheço alguns produtos.</label>
+                            <label><input type="radio" name="q4" value="3" required> Alta. Conheço bem a maioria dos produtos.</label>
+                        </div>
+                    </div>
+                     <div class="quiz-question">
+                        <p>5. Qual sua situação financeira?</p>
+                        <div class="quiz-options">
+                            <label><input type="radio" name="q5" value="1" required> Rendimentos apenas para despesas essenciais.</label>
+                            <label><input type="radio" name="q5" value="2" required> Cubro despesas e sobra um valor para investir.</label>
+                            <label><input type="radio" name="q5" value="3" required> Patrimônio consolidado e alta capacidade de poupança.</label>
+                        </div>
+                    </div>
+                    <div class="quiz-question">
+                        <p>6. Que percentual do seu patrimônio alocaria em risco?</p>
+                        <div class="quiz-options">
+                            <label><input type="radio" name="q6" value="1" required> Menos de 10%.</label>
+                            <label><input type="radio" name="q6" value="2" required> Entre 10% e 30%.</label>
+                            <label><input type="radio" name="q6" value="3" required> Acima de 30%.</label>
+                        </div>
+                    </div>
+                    <div class="quiz-question">
+                        <p>7. Você possui formação na área financeira?</p>
+                        <div class="quiz-options">
+                           <label><input type="radio" name="q7" value="1" required> Não, minha área é diferente.</label>
+                           <label><input type="radio" name="q7" value="2" required> Não, mas estudo por conta própria.</label>
+                           <label><input type="radio" name="q7" value="3" required> Sim, possuo formação ou certificação.</label>
+                        </div>
+                    </div>
+                    <div class="quiz-question">
+                        <p>8. Quando pode precisar resgatar seus investimentos?</p>
+                        <div class="quiz-options">
+                           <label><input type="radio" name="q8" value="1" required> A qualquer momento (menos de 6 meses).</label>
+                           <label><input type="radio" name="q8" value="2" required> Talvez em 1 ou 2 anos.</label>
+                           <label><input type="radio" name="q8" value="3" required> Não precisarei no curto ou médio prazo.</label>
+                        </div>
+                    </div>
+                    <div class="quiz-question">
+                        <p>9. Há quanto tempo você investe?</p>
+                        <div class="quiz-options">
+                           <label><input type="radio" name="q9" value="1" required> Nunca investi ou comecei há menos de 1 ano.</label>
+                           <label><input type="radio" name="q9" value="2" required> Invisto entre 1 e 5 anos.</label>
+                           <label><input type="radio" name="q9" value="3" required> Invisto há mais de 5 anos.</label>
+                        </div>
+                    </div>
+                    <div class="quiz-question">
+                        <p>10. Como se sente sobre a possibilidade de perder capital?</p>
+                        <div class="quiz-options">
+                           <label><input type="radio" name="q10" value="1" required> Extremamente desconfortável.</label>
+                           <label><input type="radio" name="q10" value="2" required> Aceito perdas pequenas e controladas.</label>
+                           <label><input type="radio" name="q10" value="3" required> Vejo perdas como oportunidades.</label>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit">Ver o Meu Perfil</button>
+                <div id="profile-quiz-result" class="quiz-result" style="font-size: 1.2em; display: none;"></div>
             </form>
           </section>
         </div>
       </details>
-
+      
       <details>
         <summary class="quiz-theme">✅ Quiz de Aprendizagem</summary>
         <div class="drawer-content">
           <section id="quiz" class="content-section">
             <div class="quiz-container">
-              <details>
-                <summary class="us-theme">Prova: Mercado Americano 🇺🇸</summary>
-                <form class="quiz-form" id="quiz-americano">
-                  <div class="questions-wrapper"></div><button type="submit">Verificar</button>
-                  <div class="quiz-result"></div>
-                </form>
-              </details>
-              </div>
+              <details><summary class="us-theme">Prova: Mercado Americano 🇺🇸</summary><form class="quiz-form" id="quiz-americano"><div class="questions-wrapper"></div><button type="submit">Verificar Respostas</button><div class="quiz-result"></div></form></details>
+              <details><summary class="br-theme">Prova: Mercado Brasileiro 🇧🇷</summary><form class="quiz-form" id="quiz-brasileiro"><div class="questions-wrapper"></div><button type="submit">Verificar Respostas</button><div class="quiz-result"></div></form></details>
+              <details><summary class="crypto-theme">Prova: Criptoativos 🪙</summary><form class="quiz-form" id="quiz-cripto"><div class="questions-wrapper"></div><button type="submit">Verificar Respostas</button><div class="quiz-result"></div></form></details>
+            </div>
           </section>
         </div>
       </details>
@@ -1080,7 +1161,33 @@
     <div id="chat-fab">💬</div>
 
     <div id="chat-popup">
+      <div id="chatbot-container" class="w-full h-full bg-gray-800 flex flex-col">
+          <div id="theme-selection" class="flex-1 flex flex-col justify-center items-center p-4 text-center">
+              <h1 class="text-2xl font-bold mb-2 text-white">Assistente Virtual</h1>
+              <p class="text-gray-400 mb-6">Sobre qual assunto você gostaria de falar?</p>
+              <div class="grid grid-cols-1 gap-3 w-full">
+                  <button data-theme="Criptoativos" class="theme-btn bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded-lg">🪙 Criptoativos</button>
+                  <button data-theme="Mercado Brasileiro" class="theme-btn bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-4 rounded-lg">🇧🇷 Mercado Brasileiro</button>
+                  <button data-theme="Mercado Americano" class="theme-btn bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-4 rounded-lg">🇺🇸 Mercado Americano</button>
+              </div>
+               <button id="close-chat" class="text-gray-400 hover:text-white mt-6 text-sm">Fechar</button>
+          </div>
+          <div id="chat-window" class="hidden h-full w-full flex-col">
+              <div class="flex items-center justify-between p-3 border-b border-gray-700">
+                  <button id="chatbot-back-btn" class="text-gray-300 hover:text-white">← Voltar</button>
+                  <h2 id="chatbot-title" class="text-lg font-semibold text-white"></h2>
+                  <div class="w-20"></div>
+              </div>
+              <div id="chatbot-messages" class="flex-1 p-4 overflow-y-auto space-y-4 flex flex-col"></div>
+              <div class="p-2 border-t border-gray-700">
+                  <div class="flex items-center bg-gray-700 rounded-lg">
+                      <input type="text" id="chatbot-input" class="w-full bg-transparent p-3 text-white focus:outline-none" placeholder="Digite sua pergunta...">
+                      <button id="chatbot-send-btn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg m-1">Enviar</button>
+                  </div>
+              </div>
+          </div>
       </div>
+  </div>
   </div>
 
   <script type="module">
