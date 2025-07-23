@@ -142,8 +142,47 @@
     overlay.addEventListener('click', closeMenu);
 
     sidebar.querySelectorAll('nav a').forEach(link => {
-        link.addEventListener('click', closeMenu);
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const targetId = link.getAttribute('href');
+            const targetElement = document.querySelector(targetId);
+            if (targetElement) {
+                // Abre o <details> principal
+                if (targetElement.tagName === 'DETAILS') {
+                    targetElement.open = true;
+                } else if (targetElement.closest('details')) {
+                    targetElement.closest('details').open = true;
+                }
+                
+                // Rola suavemente para o elemento
+                targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+            closeMenu();
+        });
     });
+    
+    // --- LÓGICA DO ACCORDION ---
+    function setupAccordion(containerSelector) {
+        const detailsElements = document.querySelectorAll(containerSelector);
+        
+        detailsElements.forEach(details => {
+            details.addEventListener('toggle', () => {
+                if (details.open) {
+                    // Fecha os outros <details> no mesmo nível
+                    detailsElements.forEach(otherDetails => {
+                        if (otherDetails !== details && otherDetails.parentElement === details.parentElement) {
+                            otherDetails.removeAttribute('open');
+                        }
+                    });
+                }
+            });
+        });
+    }
+
+    // Aplica a lógica de accordion para os tópicos principais e subtópicos
+    setupAccordion('.content-section-details');
+    setupAccordion('.sub-topic-details');
+    setupAccordion('.quiz-container > details');
     
     document.querySelectorAll('.video-embed-container').forEach(container => {
       container.addEventListener('click', () => {
@@ -960,23 +999,82 @@
   #main-content { 
     padding: 20px; 
     box-sizing: border-box; 
-    margin-top: var(--header-height);
   }
   
-  .content-section { background: var(--glass-bg); backdrop-filter: blur(12px); border-radius: 15px; border: 1px solid var(--glass-border); padding: 25px; margin-bottom: 30px; box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3); transition: all 0.3s ease; animation: fadeInUp 0.5s ease-out forwards; }
-  .content-section:hover { border-color: rgba(255, 255, 255, 0.3); box-shadow: 0 8px 40px 0 rgba(0, 0, 0, 0.5); }
-  .content-section h2 { font-size: 2em; margin-bottom: 25px; text-align: center; text-shadow: 2px 2px 8px rgba(0,0,0,0.7); display: flex; align-items: center; justify-content: center; gap: 15px; font-family: 'Poppins', sans-serif; }
-  .title-flag { height: 1.2em; width: auto; border-radius: 4px; }
-  .content-section h3 { font-size: 1.4em; margin-top: 25px; padding-bottom: 10px; border-bottom: 2px solid; }
-  .content-section h4 { font-size: 1.1em; margin-top: 20px; color: white; }
-  .content-section p, .content-section li { color: #ddd; line-height: 1.7; }
-  .content-section ul { list-style-position: inside; padding-left: 0; }
+  /* --- ESTILOS DO NOVO ACCORDION --- */
+  .content-section-details {
+    background: var(--glass-bg);
+    backdrop-filter: blur(12px);
+    border-radius: 15px;
+    border: 1px solid var(--glass-border);
+    margin-bottom: 20px;
+    transition: all 0.3s ease;
+  }
+  .content-section-details:hover {
+    border-color: rgba(255, 255, 255, 0.3);
+    box-shadow: 0 8px 40px 0 rgba(0, 0, 0, 0.5);
+  }
+  .content-section-summary {
+    padding: 20px;
+    cursor: pointer;
+    outline: none;
+    list-style: none; /* Remove o marcador padrão */
+  }
+  .content-section-summary::-webkit-details-marker {
+    display: none; /* Chrome */
+  }
+  .content-section-summary h2 {
+    font-size: 1.5em; 
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+   .content-section-summary h2::after {
+    content: '▶';
+    font-size: 0.8em;
+    transition: transform 0.3s ease;
+  }
+  .content-section-details[open] > .content-section-summary h2::after {
+    transform: rotate(90deg);
+  }
+  .content-section-body {
+    padding: 0 20px 20px 20px;
+  }
   
-  #mercado-americano h2, #mercado-americano h3 { color: #a9c7ff; border-color: var(--us-red); }
-  #mercado-brasileiro h2, #mercado-brasileiro h3 { color: #a6ffcb; border-color: var(--br-yellow); }
-  #criptoativos h2, #criptoativos h3 { color: var(--crypto-yellow); border-color: var(--crypto-yellow); }
-  #quiz h2, #perfil-investidor h2 { color: var(--gemini-purple); }
-  #perfil-investidor h3 { color: #6dd5ed; border-color: #17a2b8; }
+  .sub-topic-details {
+    border-top: 1px solid var(--glass-border);
+    margin-top: 15px;
+  }
+  .sub-topic-summary {
+    padding: 15px 0;
+    cursor: pointer;
+    outline: none;
+    list-style: none;
+  }
+  .sub-topic-summary::-webkit-details-marker { display: none; }
+
+  .sub-topic-summary h3 {
+    font-size: 1.2em;
+    margin: 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .sub-topic-summary h3::after {
+    content: '▶';
+    font-size: 0.8em;
+    transition: transform 0.3s ease;
+  }
+  .sub-topic-details[open] > .sub-topic-summary h3::after {
+    transform: rotate(90deg);
+  }
+  .sub-topic-body {
+    padding-bottom: 15px;
+  }
+  /* --- FIM DOS ESTILOS ACCORDION --- */
+
+  .title-flag { height: 1.2em; width: auto; border-radius: 4px; }
   strong { color: white; }
   code { font-family: 'Roboto Mono', monospace; background-color: rgba(255,255,255,0.1); padding: 3px 6px; border-radius: 4px; font-size: 0.9em; border: 1px solid rgba(255,255,255,0.2); }
   
@@ -997,6 +1095,7 @@
   .nav-button:hover { background: rgba(255, 255, 255, 0.2); transform: translateY(-2px); box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
   .nav-button.prev::before { content: '« '; }
   .nav-button.next::after { content: ' »'; }
+
   .quiz-container details { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; margin-bottom: 20px; }
   .quiz-container summary { font-size: 1.3em; font-weight: bold; padding: 20px; cursor: pointer; outline: none; display: flex; justify-content: space-between; align-items: center; }
   .quiz-container summary::after { content: '▼'; transition: transform 0.3s; }
@@ -1217,20 +1316,12 @@
       flex-grow: 1;
       margin-left: var(--sidebar-width);
       padding: 40px;
-      margin-top: 0;
     }
-    .content-section {
-      padding: 30px;
-      margin-bottom: 40px;
-    }
-    .content-section h2 {
+    .content-section-summary h2 {
       font-size: 2.5em;
     }
-    .content-section h3 {
+    .sub-topic-summary h3 {
       font-size: 1.6em;
-    }
-    .content-section h4 {
-      font-size: 1.2em;
     }
     .desktop-auth-container {
       display: flex;
@@ -1320,242 +1411,123 @@
           </aside>
           
           <main id="main-content">
-              <section id="mercado-americano" class="content-section market-us">
-  <h2><img src="https://flagcdn.com/w80/us.png" class="title-flag" alt="Bandeira dos EUA"> Mercado Americano</h2>
-  
-    <div class="metrics-grid">
-        <div class="metric-card">
-            <div class="tradingview-widget-container" style="height:100%; width:100%">
-              <div class="tradingview-widget-container__widget" style="height:100%; width:100%"></div>
-              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-              { "symbol": "SPREADEX:SPX", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
-              </script>
-            </div>
-            </div>
-        <div class="metric-card">
-            <div class="tradingview-widget-container" style="height:100%; width:100%">
-              <div class="tradingview-widget-container__widget" style="height:100%; width:100%"></div>
-              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-              { "symbol": "NASDAQ:NDX", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
-              </script>
-            </div>
-            </div>
-        <div class="metric-card">
-             <div class="tradingview-widget-container" style="height:100%; width:100%">
-              <div class="tradingview-widget-container__widget" style="height:100%; width:100%"></div>
-              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-              { "symbol": "OANDA:XAUUSD", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
-              </script>
-            </div>
-            </div>
-    </div>
+              
+              <details id="mercado-americano" class="content-section-details market-us">
+                  <summary class="content-section-summary">
+                      <h2><img src="https://flagcdn.com/w80/us.png" class="title-flag" alt="Bandeira dos EUA"> Mercado Americano</h2>
+                  </summary>
+                  <div class="content-section-body">
+                      <div class="metrics-grid">
+                          <div class="metric-card"><div class="tradingview-widget-container" style="height:100%;width:100%"><div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{ "symbol": "SPREADEX:SPX", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }</script></div></div>
+                          <div class="metric-card"><div class="tradingview-widget-container" style="height:100%;width:100%"><div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{ "symbol": "NASDAQ:NDX", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }</script></div></div>
+                          <div class="metric-card"><div class="tradingview-widget-container" style="height:100%;width:100%"><div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{ "symbol": "OANDA:XAUUSD", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }</script></div></div>
+                      </div>
+                      <div class="audio-player-container"><h4>🎧 Áudio: Resumo do Mercado Americano</h4><audio controls><source src="https://www.dropbox.com/scl/fi/8615m71gfm293cw2a9gax/09zqt-8w7nm.mp3?rlkey=p4ggvqiu98cpqm9oy69a8wqmy&st=f5rg6qs2&dl=1" type="audio/mpeg">O seu navegador não suporta o elemento de áudio.</audio></div>
+                      <details class="sub-topic-details">
+                          <summary class="sub-topic-summary"><h3>Bolsas de Valores e Índices</h3></summary>
+                          <div class="sub-topic-body">
+                              <p>O mercado financeiro americano é um ambiente dinâmico e altamente estruturado onde diversos tipos de ativos são negociados. Ele divide-se em diferentes segmentos, como o mercado de ações, o mercado de títulos, o mercado de câmbio e o de derivados. Cada um desses segmentos possui características específicas, regras próprias e mecanismos de funcionamento que os tornam essenciais para a engrenagem do sistema económico dos EUA.</p>
+                              <h4>As Bolsas de Valores Americanas</h4>
+                              <p>A bolsa de valores americana é considerada a maior e mais influente do mundo, abrigando companhias de capital aberto de renome global. A <strong>Nasdaq</strong> é quase inteiramente voltada para empresas de tecnologia, com destaques como Apple, Netflix, Meta (Facebook), Google (Alphabet), Amazon e Microsoft. A capitalização total de mercado das empresas negociadas nas bolsas americanas ultrapassa <strong>US$ 25 triliões</strong>, evidenciando a magnitude e influência global desse mercado.</p>
+                              <h4>Principais Índices Americanos</h4>
+                              <ul><li><strong>Nasdaq Composite:</strong> Um índice amplo que reúne aproximadamente 3.000 empresas listadas na Nasdaq, sendo cerca de 60% do setor de tecnologia, refletindo a força da inovação e da transformação digital nos Estados Unidos.</li><li><strong>Nasdaq-100:</strong> Composto pelas 100 maiores empresas não financeiras listadas na Nasdaq, este índice é altamente concentrado em empresas de tecnologia e consumo, servindo como termómetro das companhias de maior crescimento e capitalização na bolsa.</li><li><strong>S&P 500 (Standard & Poor's 500):</strong> Representa as 500 maiores empresas de capital aberto dos Estados Unidos, englobando diversos setores da economia, e é considerado o índice mais representativo da saúde económica americana.</li><li><strong>Dow Jones Industrial Average (DJIA):</strong> Acompanha o desempenho de 30 das maiores e mais influentes empresas dos EUA, sendo um dos índices mais antigos e simbólicos do mercado financeiro global, com foco em empresas consolidadas e de grande reputação.</li></ul>
+                              <p>Juntos, esses índices oferecem uma visão abrangente e estratégica do comportamento do mercado americano, permitindo que investidores e analistas tomem decisões baseadas em dados concretos sobre os diferentes setores da economia.</p>
+                          </div>
+                      </details>
+                      <details class="sub-topic-details">
+                          <summary class="sub-topic-summary"><h3>Vantagens de Operar no Mercado Internacional</h3></summary>
+                          <div class="sub-topic-body">
+                              <p>O mercado americano possui um maior volume quando comparado com a B3 (Bolsa de Valores Brasileira), o que resulta em excelentes movimentos, especialmente quando alinhado à tendência, com um risco pequeno para um alvo gigante (Payoff). Também oferece uma diversidade de ativos a explorar, como Bitcoin, NASDAQ, Ouro, DAX, entre outros. Essa diversidade é uma vantagem, pois se um ativo não estiver a performar bem, é possível mudar para outro que esteja, evitando ficar "preso a apenas um ativo".</p>
+                              <p>Como saber se um ativo está "mau" ou "bom"? Ativos considerados bons são aqueles que possuem menos ruído nos candles. O ruído indica que um ativo está lateral, não se movendo significativamente nem para cima nem para baixo, o que exige muito cuidado ao operar.</p>
+                              <p>Operar no mercado americano também abre a possibilidade de <strong>ganhar em dólar</strong>, um dos maiores atrativos para quem opera. Ao realizar operações em ativos precificados em dólar (ações, commodities ou pares de moedas no Forex), o investidor fica exposto não apenas à valorização do ativo, mas também à variação cambial. Isso significa que, além do lucro operacional, há um potencial ganho adicional caso o dólar se valorize frente ao real.</p>
+                          </div>
+                      </details>
+                      <details class="sub-topic-details">
+                          <summary class="sub-topic-summary"><h3>Metodologia Operacional e Gestão de Risco</h3></summary>
+                          <div class="sub-topic-body">
+                              <p>A construção de uma metodologia operacional eficaz, especialmente no contexto do mercado internacional, exige não apenas conhecimento técnico, mas também disciplina comportamental.</p>
+                              <h4>Estratégia: Continuidade de Tendência</h4>
+                              <p>Uma abordagem consolidada entre os operadores mais experientes é um foco maior nas operações de <strong>continuidade de tendência</strong>. Essa estratégia baseia-se em identificar e posicionar-se a favor da direção predominante, evitando, mas não inviabilizando, contramovimentos que, embora possam gerar lucro significativo, tendem a oferecer mais instabilidade e riscos operacionais. No modelo apresentado, o trader escolhe, de forma consciente, evitar operações contra a tendência do mercado. Essa decisão não é apenas técnica, mas também mental: ao treinar a mente para buscar somente oportunidades a favor da direção principal dos preços, fica mais fácil manter a consistência e a disciplina nas decisões. Isso ajuda a evitar que emoções atrapalhem nos momentos em que o mercado está mais volátil ou confuso.</p>
+                              <p>Um dos pilares dessa metodologia está no alinhamento de tempos gráficos. A leitura deve começar nos tempos maiores, como o Diário e 60 minutos, e descer progressivamente para os menores, 15 e 5 minutos. O objetivo é verificar a convergência das tendências e das médias móveis exponenciais e simples (notadamente as de <code>9, 20, 50, 72 e 200</code> períodos). Quando todos os tempos e médias estão alinhados numa única direção (por exemplo, tendência de alta), o operador direciona a sua atenção exclusivamente para gatilhos de continuidade.</p>
+                              <p>No micro, a análise técnica é mais refinada por meio da observação de estruturas clássicas de preços, como pivôs de alta e baixa, espelhamentos, retângulos e triângulos. A ativação dessas estruturas orienta os pontos de entrada com maior probabilidade de êxito. Além disso, destaca-se a importância do reconhecimento de pullbacks e da reancoragem às médias móveis, fenómenos que indicam pausas naturais no fluxo direcional do mercado e fornecem zonas técnicas de reposicionamento com risco controlado. A entrada dá-se preferencialmente mediante a formação de um candle gatilho, cuja função é confirmar visualmente a retomada da tendência principal.</p>
+                              <h4>Gestão de Risco e Stops Técnicos</h4>
+                              <p>A estrutura adota uma gestão de risco específica por ativo, baseada na volatilidade média de cada um. A seguir, o tamanho médio dos stops nos principais ativos operados:</p>
+                              <ul><li>Bitcoin (BTC/USD): aproximadamente 250 pontos</li><li>USATEC/Nasdaq (US100): cerca de 25 pontos</li><li>Ouro (XAU/USD): entre 3 e 4 pontos; acima disso, o risco começa a comprometer o custo-benefício da operação.</li><li>G40/DAX (GER40): entre 25 e 40 pontos</li><li>EUR/USD (par de moedas Forex): entre 8 e 10 pontos</li></ul>
+                              <p>A recomendação é que o trader utilize um simulador de mercado para testar o tamanho da posição e entender qual a melhor "mão" para cada ativo, explorando essa dinâmica de deslocamento de stop em função do volume financeiro envolvido. Esses testes permitem o treino do olhar técnico e do tempo de tela, que são fundamentais para aprimorar a leitura de mercado e a execução das ordens.</p>
+                              <h4>Ajuste Fino e Gestão</h4>
+                              <p>Outro aspeto técnico relevante está no posicionamento estratégico do stop-loss, que deve ser ajustado de forma levemente inferior ao ponto técnico considerado ideal. Essa prática busca evitar que o operador seja retirado prematuramente da operação devido à variação do spread, ou seja, a diferença entre o preço de compra (bid) e o preço de venda (ask). É importante ressaltar que o spread varia de ativo para ativo e também sofre influência do horário de negociação, sendo normalmente maior fora dos períodos de maior liquidez.</p>
+                              <p>Em relação à gestão de risco pessoal, a referência adotada pelo operador consiste num limite diário de perda (GR) entre <strong>US$ 1.000 a US$ 1.500</strong>, aplicado sobre uma conta de US$ 100.000. Esse valor é diluído em três a quatro operações diárias, resultando numa média de US$ 300 a US$ 500 de stop por operação. A estratégia opta por uma alavancagem controlada, que permite entradas mais robustas, sem o excesso de operações que, no longo prazo, tendem a reduzir a assertividade. Essa abordagem demonstra um equilíbrio entre exposição ao risco e preservação de capital, reforçando a importância de operar com uma metodologia clara, aliada a um controlo emocional treinado para lidar com a imprevisibilidade dos mercados financeiros globais.</p>
+                          </div>
+                      </details>
+                      <details class="sub-topic-details">
+                          <summary class="sub-topic-summary"><h3>Corretora e Plataforma</h3></summary>
+                          <div class="sub-topic-body">
+                              <h4>Corretora: ZeroMarkets</h4>
+                              <p>Para comprar ações no mercado americano, é necessário ter conta numa corretora estrangeira e de confiança. A equipa Xtraders possui parceria com a <strong>ZeroMarkets</strong>, uma corretora com suporte 24h humanizado e em Português (WhatsApp), que oferece os menores spreads do mercado e integração ao Black Arrow gratuitamente, caso alguns requisitos sejam cumpridos.</p>
+                              <h4>Passo a Passo Interativo: Criar Conta na ZeroMarkets</h4>
+                              <div class="interactive-checklist">
+                                  <div class="progress-bar-container"><div class="progress-bar-fill"></div></div>
+                                  <label class="checklist-item"><input type="checkbox"><span>Aceder ao site da ZeroMarkets através do link de parceiro.</span></label>
+                                  <label class="checklist-item"><input type="checkbox"><span>Preencher dados iniciais e confirmar o e-mail com o código de 6 dígitos.</span></label>
+                                  <label class="checklist-item"><input type="checkbox"><span>Criar uma palavra-passe de acesso segura.</span></label>
+                                  <label class="checklist-item"><input type="checkbox"><span>Selecionar "Conta REAL" и preencher dados pessoais.</span></label>
+                                  <label class="checklist-item"><input type="checkbox"><span>Enviar foto nítida de um documento de identificação (CNH, BI, etc.).</span></label>
+                                  <label class="checklist-item"><input type="checkbox"><span>Enviar comprovativo de morada emitido no Brasil.</span></label>
+                                  <label class="checklist-item"><input type="checkbox"><span>Preencher o questionário de perfil (Suitability) conforme as recomendações.</span></label>
+                                  <label class="checklist-item"><input type="checkbox"><span>Confirmar se o código IB é <strong>31439-TIME XTRADERS</strong> antes de finalizar.</span></label>
+                              </div>
+                              <h4>Plataforma: Porque utilizar o BlackArrow?</h4>
+                              <p>O <strong>BlackArrow</strong> é a plataforma de negociação preferencial da equipa Xtraders. Desenvolvida para o mercado internacional, ela oferece uma experiência profissional completa e muito semelhante ao que os traders brasileiros já conhecem no Profit da Nelógica, mas com foco nas operações globais. O seu custo mensal é de <strong>US$ 22</strong>, porém, esse valor pode ser totalmente isento caso o trader cumpra alguns requisitos: estar vinculado ao código IB 31439 (equipa xtraders), realizar um depósito mínimo de US$ 200 e, dentro do período de um mês, operar pelo menos 20 contratos de commodities ou índices, ou então 2 contratos de metais como o ouro.</p>
+                              <p>Após o depósito, o BlackArrow pode ser descarregado diretamente na área de downloads do site da ZeroMarkets ou através de um link enviado por e-mail. Para deixar a plataforma configurada da mesma forma que a equipa utiliza, é possível importar um ficheiro padrão acedendo ao menu "Ficheiro > Importar/Exportar configurações".</p>
+                              <p>A configuração visual recomendada pela equipa Xtraders inclui fundo branco nos gráficos, candles positivos com linha branca e candles negativos com linha e preenchimento pretos. A escala logarítmica deve ser ativada, a grelha vertical e horizontal removida e a marca d'água mantida ativa, facilitando a identificação do ativo no ecrã.</p>
+                              <h4>Principais Ativos Operados:</h4>
+                              <p>Poderá operar com eficiência os principais ativos do mercado global. Os mais utilizados são:</p>
+                              <ul><li>BTC/USD (Bitcoin)</li><li>USATEC/US100 (índice Nasdaq)</li><li>XAU/USD (ouro)</li><li>GER40/G40 (índice DAX da Alemanha)</li><li>EUR/USD (par de moedas Forex)</li><li>Outros ativos: XBR/USD (petróleo), HK50 (índice de Hong Kong), JP225 (índice Nikkei - Japão), UK100 (Reino Unido)</li></ul>
+                              <h4>Funcionalidades e Otimizações da Plataforma</h4>
+                              <p>Para garantir clareza nos custos operacionais, é fundamental ativar a visualização do spread clicando com o botão direito no gráfico e selecionando "preços bid". A diferença entre as linhas de compra e venda corresponde ao spread da operação. Também é essencial ativar a barra de estudos, acedida pelo botão direito no gráfico, para inserir ferramentas como Fibonacci, retângulos e linhas de tendência. Para otimizar a visualização dos ativos, recomenda-se o agrupamento dos gráficos. Isso é feito clicando no círculo com três pontos e selecionando o mesmo grupo (exemplo: Grupo 1) para todas as janelas. Além disso, é importante manter ativada a exibição de dividendos, juros e bonificações para uma leitura completa dos ativos.</p>
+                              <p>A plataforma ainda conta com a função "Relógio de mercado", acessível no menu "Ferramentas", que mostra os horários de abertura e fecho das principais bolsas do mundo, algo essencial para entender os momentos de maior liquidez e volatilidade. É possível também alterar a moeda de visualização dos resultados, por exemplo, de dólar para real, diretamente na parte superior da plataforma.</p>
+                              <p>Outro recurso muito utilizado pela equipa Xtraders é a função de cálculo de stop e gain. Através da barra lateral, basta aceder a "estratégia > personalizadas", configurar os valores desejados em dinheiro e, ao pressionar Shift, a plataforma exibirá exatamente até onde o mercado precisa de se movimentar para atingir os alvos definidos, facilitando o cálculo do lote ideal.</p>
+                              <p>Por fim, para deixar o ambiente de operação mais limpo e funcional, recomenda-se manter apenas os botões essenciais visíveis: compra a mercado, venda a mercado, zerar, cancelar e zerar tudo. Dessa forma, o BlackArrow torna-se uma plataforma objetiva, eficiente e totalmente alinhada com o estilo operacional da equipa Xtraders.</p>
+                          </div>
+                      </details>
+                      <details class="sub-topic-details">
+                          <summary class="sub-topic-summary"><h3>Como Identificar Notícias Relevantes</h3></summary>
+                          <div class="sub-topic-body">
+                              <p>Para identificar notícias relevantes que podem impactar as suas decisões no mercado financeiro, o <strong>Calendário Económico do site Investing.com</strong> é uma das ferramentas mais úteis и acessíveis. Ele permite acompanhar, em tempo real, os principais eventos e indicadores económicos globais que influenciam diretamente a volatilidade dos ativos especialmente no mercado internacional.</p>
+                              <p>Ao aceder ao site Investing.com, vá até ao separador "Calendário Económico". Lá, verá uma lista com os eventos programados para o dia, incluindo hora de divulgação, país de origem, importância esperada e tipo de indicador (inflação, desemprego, PIB, etc.). Para facilitar a leitura e evitar ruídos desnecessários, o ideal é filtrar por eventos de alta relevância. No canto superior da tabela, há ícones de "touro" que representam o impacto esperado da notícia:</p>
+                              <ul><li>1 touro: baixo impacto</li><li>2 touros: impacto moderado</li><li><strong>3 touros: alto impacto</strong></li></ul>
+                              <p>Deve dar atenção máxima aos eventos marcados com <strong>3 touros</strong>, pois são esses que tendem a causar forte volatilidade nos ativos especialmente os índices (como US100, S&P 500), moedas (como EUR/USD), ouro e petróleo. Entre as notícias mais relevantes, destacam-se especialmente as relacionadas a:</p>
+                              <ul><li><strong>Taxa de juro (Interest Rate Decision):</strong> Decisões de política monetária dos principais bancos centrais (Fed, BCE, BoE, etc.) têm alto impacto, pois afetam diretamente a liquidez e o custo do dinheiro no mundo. Uma elevação ou corte inesperado pode provocar movimentos bruscos no dólar, ouro, índices e renda variável.</li><li><strong>Reuniões do FOMC (Federal Open Market Committee):</strong> A publicação da ata ou falas de dirigentes do Fed costumam gerar especulação sobre os próximos passos da taxa de juros nos EUA.</li><li><strong>Dados de inflação (CPI, PPI):</strong> A inflação guia as decisões dos bancos centrais. Números acima ou abaixo do esperado podem antecipar ajustes na taxa de juros.</li><li><strong>Dados de emprego (Payroll, Taxa de desemprego):</strong> O relatório de empregos dos EUA, conhecido como Payroll, é um dos dados mensais mais aguardados. Pode mudar drasticamente o rumo do mercado no dia da divulgação.</li><li><strong>PIB (Produto Interno Bruto):</strong> Mostra o crescimento da economia. Um resultado inesperado pode afetar perspetivas de juros e risco-país.</li></ul>
+                              <div class="video-embed-container" data-video-id="o7MdPkAjUfc"><h4>🎥 Aula: Introdução ao Mercado Americano</h4><img src="https://i.imgur.com/sdO8Y5b.jpeg" alt="Thumbnail da aula sobre mercado americano" class="video-thumbnail" onerror="this.onerror=null;this.src='https://placehold.co/640x360/000000/FFFFFF?text=Thumbnail+Indisponível';"><div class="play-icon"></div></div>
+                          </div>
+                      </details>
+                  </div>
+              </details>
 
-  <div class="audio-player-container"><h4>🎧 Áudio: Resumo do Mercado Americano</h4><audio controls><source src="https://www.dropbox.com/scl/fi/8615m71gfm293cw2a9gax/09zqt-8w7nm.mp3?rlkey=p4ggvqiu98cpqm9oy69a8wqmy&st=f5rg6qs2&dl=1" type="audio/mpeg">O seu navegador não suporta o elemento de áudio.</audio></div>
-  <p>O mercado financeiro americano é um ambiente dinâmico e altamente estruturado onde diversos tipos de ativos são negociados. Ele divide-se em diferentes segmentos, como o mercado de ações, o mercado de títulos, o mercado de câmbio e o de derivados. Cada um desses segmentos possui características específicas, regras próprias e mecanismos de funcionamento que os tornam essenciais para a engrenagem do sistema económico dos EUA.</p>
-  <h3>Bolsas de Valores e Índices</h3>
-  <h4>As Bolsas de Valores Americanas</h4>
-  <p>A bolsa de valores americana é considerada a maior e mais influente do mundo, abrigando companhias de capital aberto de renome global. A <strong>Nasdaq</strong> é quase inteiramente voltada para empresas de tecnologia, com destaques como Apple, Netflix, Meta (Facebook), Google (Alphabet), Amazon e Microsoft. A capitalização total de mercado das empresas negociadas nas bolsas americanas ultrapassa <strong>US$ 25 triliões</strong>, evidenciando a magnitude e influência global desse mercado.</p>
-  <h4>Principais Índices Americanos</h4>
-  <ul><li><strong>Nasdaq Composite:</strong> Um índice amplo que reúne aproximadamente 3.000 empresas listadas na Nasdaq, sendo cerca de 60% do setor de tecnologia, refletindo a força da inovação e da transformação digital nos Estados Unidos.</li><li><strong>Nasdaq-100:</strong> Composto pelas 100 maiores empresas não financeiras listadas na Nasdaq, este índice é altamente concentrado em empresas de tecnologia e consumo, servindo como termómetro das companhias de maior crescimento e capitalização na bolsa.</li><li><strong>S&P 500 (Standard & Poor's 500):</strong> Representa as 500 maiores empresas de capital aberto dos Estados Unidos, englobando diversos setores da economia, e é considerado o índice mais representativo da saúde económica americana.</li><li><strong>Dow Jones Industrial Average (DJIA):</strong> Acompanha o desempenho de 30 das maiores e mais influentes empresas dos EUA, sendo um dos índices mais antigos e simbólicos do mercado financeiro global, com foco em empresas consolidadas e de grande reputação.</li></ul>
-  <p>Juntos, esses índices oferecem uma visão abrangente e estratégica do comportamento do mercado americano, permitindo que investidores e analistas tomem decisões baseadas em dados concretos sobre os diferentes setores da economia.</p>
-  <h3>Vantagens de Operar no Mercado Internacional</h3>
-  <p>O mercado americano possui um maior volume quando comparado com a B3 (Bolsa de Valores Brasileira), o que resulta em excelentes movimentos, especialmente quando alinhado à tendência, com um risco pequeno para um alvo gigante (Payoff). Também oferece uma diversidade de ativos a explorar, como Bitcoin, NASDAQ, Ouro, DAX, entre outros. Essa diversidade é uma vantagem, pois se um ativo não estiver a performar bem, é possível mudar para outro que esteja, evitando ficar "preso a apenas um ativo".</p>
-  <p>Como saber se um ativo está "mau" ou "bom"? Ativos considerados bons são aqueles que possuem menos ruído nos candles. O ruído indica que um ativo está lateral, não se movendo significativamente nem para cima nem para baixo, o que exige muito cuidado ao operar.</p>
-  <p>Operar no mercado americano também abre a possibilidade de <strong>ganhar em dólar</strong>, um dos maiores atrativos para quem opera. Ao realizar operações em ativos precificados em dólar (ações, commodities ou pares de moedas no Forex), o investidor fica exposto não apenas à valorização do ativo, mas também à variação cambial. Isso significa que, além do lucro operacional, há um potencial ganho adicional caso o dólar se valorize frente ao real.</p>
-  <h3>Metodologia Operacional e Gestão de Risco</h3>
-  <p>A construção de uma metodologia operacional eficaz, especialmente no contexto do mercado internacional, exige não apenas conhecimento técnico, mas também disciplina comportamental.</p>
-  <h4>Estratégia: Continuidade de Tendência</h4>
-  <p>Uma abordagem consolidada entre os operadores mais experientes é um foco maior nas operações de <strong>continuidade de tendência</strong>. Essa estratégia baseia-se em identificar e posicionar-se a favor da direção predominante, evitando, mas não inviabilizando, contramovimentos que, embora possam gerar lucro significativo, tendem a oferecer mais instabilidade e riscos operacionais. No modelo apresentado, o trader escolhe, de forma consciente, evitar operações contra a tendência do mercado. Essa decisão não é apenas técnica, mas também mental: ao treinar a mente para buscar somente oportunidades a favor da direção principal dos preços, fica mais fácil manter a consistência e a disciplina nas decisões. Isso ajuda a evitar que emoções atrapalhem nos momentos em que o mercado está mais volátil ou confuso.</p>
-  <p>Um dos pilares dessa metodologia está no alinhamento de tempos gráficos. A leitura deve começar nos tempos maiores, como o Diário e 60 minutos, e descer progressivamente para os menores, 15 e 5 minutos. O objetivo é verificar a convergência das tendências e das médias móveis exponenciais e simples (notadamente as de <code>9, 20, 50, 72 e 200</code> períodos). Quando todos os tempos e médias estão alinhados numa única direção (por exemplo, tendência de alta), o operador direciona a sua atenção exclusivamente para gatilhos de continuidade.</p>
-  <p>No micro, a análise técnica é mais refinada por meio da observação de estruturas clássicas de preços, como pivôs de alta e baixa, espelhamentos, retângulos e triângulos. A ativação dessas estruturas orienta os pontos de entrada com maior probabilidade de êxito. Além disso, destaca-se a importância do reconhecimento de pullbacks e da reancoragem às médias móveis, fenómenos que indicam pausas naturais no fluxo direcional do mercado e fornecem zonas técnicas de reposicionamento com risco controlado. A entrada dá-se preferencialmente mediante a formação de um candle gatilho, cuja função é confirmar visualmente a retomada da tendência principal.</p>
-  <h4>Gestão de Risco e Stops Técnicos</h4>
-  <p>A estrutura adota uma gestão de risco específica por ativo, baseada na volatilidade média de cada um. A seguir, o tamanho médio dos stops nos principais ativos operados:</p>
-  <ul><li>Bitcoin (BTC/USD): aproximadamente 250 pontos</li><li>USATEC/Nasdaq (US100): cerca de 25 pontos</li><li>Ouro (XAU/USD): entre 3 e 4 pontos; acima disso, o risco começa a comprometer o custo-benefício da operação.</li><li>G40/DAX (GER40): entre 25 e 40 pontos</li><li>EUR/USD (par de moedas Forex): entre 8 e 10 pontos</li></ul>
-  <p>A recomendação é que o trader utilize um simulador de mercado para testar o tamanho da posição e entender qual a melhor "mão" para cada ativo, explorando essa dinâmica de deslocamento de stop em função do volume financeiro envolvido. Esses testes permitem o treino do olhar técnico e do tempo de tela, que são fundamentais para aprimorar a leitura de mercado e a execução das ordens.</p>
-  <h4>Ajuste Fino e Gestão</h4>
-  <p>Outro aspeto técnico relevante está no posicionamento estratégico do stop-loss, que deve ser ajustado de forma levemente inferior ao ponto técnico considerado ideal. Essa prática busca evitar que o operador seja retirado prematuramente da operação devido à variação do spread, ou seja, a diferença entre o preço de compra (bid) e o preço de venda (ask). É importante ressaltar que o spread varia de ativo para ativo e também sofre influência do horário de negociação, sendo normalmente maior fora dos períodos de maior liquidez.</p>
-  <p>Em relação à gestão de risco pessoal, a referência adotada pelo operador consiste num limite diário de perda (GR) entre <strong>US$ 1.000 a US$ 1.500</strong>, aplicado sobre uma conta de US$ 100.000. Esse valor é diluído em três a quatro operações diárias, resultando numa média de US$ 300 a US$ 500 de stop por operação. A estratégia opta por uma alavancagem controlada, que permite entradas mais robustas, sem o excesso de operações que, no longo prazo, tendem a reduzir a assertividade. Essa abordagem demonstra um equilíbrio entre exposição ao risco e preservação de capital, reforçando a importância de operar com uma metodologia clara, aliada a um controlo emocional treinado para lidar com a imprevisibilidade dos mercados financeiros globais.</p>
-  <h3>Corretora e Plataforma</h3>
-  <h4>Corretora: ZeroMarkets</h4>
-  <p>Para comprar ações no mercado americano, é necessário ter conta numa corretora estrangeira e de confiança. A equipa Xtraders possui parceria com a <strong>ZeroMarkets</strong>, uma corretora com suporte 24h humanizado e em Português (WhatsApp), que oferece os menores spreads do mercado e integração ao Black Arrow gratuitamente, caso alguns requisitos sejam cumpridos.</p>
-  
-                    <h4>Passo a Passo Interativo: Criar Conta na ZeroMarkets</h4>
-                    <div class="interactive-checklist">
-                        <div class="progress-bar-container"><div class="progress-bar-fill"></div></div>
-                        <label class="checklist-item"><input type="checkbox"><span>Aceder ao site da ZeroMarkets através do link de parceiro.</span></label>
-                        <label class="checklist-item"><input type="checkbox"><span>Preencher dados iniciais e confirmar o e-mail com o código de 6 dígitos.</span></label>
-                        <label class="checklist-item"><input type="checkbox"><span>Criar uma palavra-passe de acesso segura.</span></label>
-                        <label class="checklist-item"><input type="checkbox"><span>Selecionar "Conta REAL" и preencher dados pessoais.</span></label>
-                        <label class="checklist-item"><input type="checkbox"><span>Enviar foto nítida de um documento de identificação (CNH, BI, etc.).</span></label>
-                        <label class="checklist-item"><input type="checkbox"><span>Enviar comprovativo de morada emitido no Brasil.</span></label>
-                        <label class="checklist-item"><input type="checkbox"><span>Preencher o questionário de perfil (Suitability) conforme as recomendações.</span></label>
-                        <label class="checklist-item"><input type="checkbox"><span>Confirmar se o código IB é <strong>31439-TIME XTRADERS</strong> antes de finalizar.</span></label>
-                    </div>
+              <details id="mercado-brasileiro" class="content-section-details market-br">
+                  <summary class="content-section-summary">
+                      <h2><img src="https://flagcdn.com/w80/br.png" class="title-flag" alt="Bandeira do Brasil"> Mercado Brasileiro</h2>
+                  </summary>
+                  <div class="content-section-body">
+                      </div>
+              </details>
+              
+              <details id="criptoativos" class="content-section-details market-crypto">
+                  <summary class="content-section-summary">
+                      <h2>🪙 Criptoativos</h2>
+                  </summary>
+                  <div class="content-section-body">
+                       </div>
+              </details>
 
-  <h4>Plataforma: Porque utilizar o BlackArrow?</h4>
-  <p>O <strong>BlackArrow</strong> é a plataforma de negociação preferencial da equipa Xtraders. Desenvolvida para o mercado internacional, ela oferece uma experiência profissional completa e muito semelhante ao que os traders brasileiros já conhecem no Profit da Nelógica, mas com foco nas operações globais. O seu custo mensal é de <strong>US$ 22</strong>, porém, esse valor pode ser totalmente isento caso o trader cumpra alguns requisitos: estar vinculado ao código IB 31439 (equipa xtraders), realizar um depósito mínimo de US$ 200 e, dentro do período de um mês, operar pelo menos 20 contratos de commodities ou índices, ou então 2 contratos de metais como o ouro.</p>
-  <p>Após o depósito, o BlackArrow pode ser descarregado diretamente na área de downloads do site da ZeroMarkets ou através de um link enviado por e-mail. Para deixar a plataforma configurada da mesma forma que a equipa utiliza, é possível importar um ficheiro padrão acedendo ao menu "Ficheiro > Importar/Exportar configurações".</p>
-  <p>A configuração visual recomendada pela equipa Xtraders inclui fundo branco nos gráficos, candles positivos com linha branca e candles negativos com linha e preenchimento pretos. A escala logarítmica deve ser ativada, a grelha vertical e horizontal removida e a marca d'água mantida ativa, facilitando a identificação do ativo no ecrã.</p>
-  <h4>Principais Ativos Operados:</h4>
-  <p>Poderá operar com eficiência os principais ativos do mercado global. Os mais utilizados são:</p>
-  <ul><li>BTC/USD (Bitcoin)</li><li>USATEC/US100 (índice Nasdaq)</li><li>XAU/USD (ouro)</li><li>GER40/G40 (índice DAX da Alemanha)</li><li>EUR/USD (par de moedas Forex)</li><li>Outros ativos: XBR/USD (petróleo), HK50 (índice de Hong Kong), JP225 (índice Nikkei - Japão), UK100 (Reino Unido)</li></ul>
-  <h4>Funcionalidades e Otimizações da Plataforma</h4>
-  <p>Para garantir clareza nos custos operacionais, é fundamental ativar a visualização do spread clicando com o botão direito no gráfico e selecionando "preços bid". A diferença entre as linhas de compra e venda corresponde ao spread da operação. Também é essencial ativar a barra de estudos, acedida pelo botão direito no gráfico, para inserir ferramentas como Fibonacci, retângulos e linhas de tendência. Para otimizar a visualização dos ativos, recomenda-se o agrupamento dos gráficos. Isso é feito clicando no círculo com três pontos e selecionando o mesmo grupo (exemplo: Grupo 1) para todas as janelas. Além disso, é importante manter ativada a exibição de dividendos, juros e bonificações para uma leitura completa dos ativos.</p>
-  <p>A plataforma ainda conta com a função "Relógio de mercado", acessível no menu "Ferramentas", que mostra os horários de abertura e fecho das principais bolsas do mundo, algo essencial para entender os momentos de maior liquidez e volatilidade. É possível também alterar a moeda de visualização dos resultados, por exemplo, de dólar para real, diretamente na parte superior da plataforma.</p>
-  <p>Outro recurso muito utilizado pela equipa Xtraders é a função de cálculo de stop e gain. Através da barra lateral, basta aceder a "estratégia > personalizadas", configurar os valores desejados em dinheiro e, ao pressionar Shift, a plataforma exibirá exatamente até onde o mercado precisa de se movimentar para atingir os alvos definidos, facilitando o cálculo do lote ideal.</p>
-  <p>Por fim, para deixar o ambiente de operação mais limpo e funcional, recomenda-se manter apenas os botões essenciais visíveis: compra a mercado, venda a mercado, zerar, cancelar e zerar tudo. Dessa forma, o BlackArrow torna-se uma plataforma objetiva, eficiente e totalmente alinhada com o estilo operacional da equipa Xtraders.</p>
-  <h3>Como Identificar Notícias Relevantes</h3>
-  <p>Para identificar notícias relevantes que podem impactar as suas decisões no mercado financeiro, o <strong>Calendário Económico do site Investing.com</strong> é uma das ferramentas mais úteis и acessíveis. Ele permite acompanhar, em tempo real, os principais eventos e indicadores económicos globais que influenciam diretamente a volatilidade dos ativos especialmente no mercado internacional.</p>
-  <p>Ao aceder ao site Investing.com, vá até ao separador "Calendário Económico". Lá, verá uma lista com os eventos programados para o dia, incluindo hora de divulgação, país de origem, importância esperada e tipo de indicador (inflação, desemprego, PIB, etc.). Para facilitar a leitura e evitar ruídos desnecessários, o ideal é filtrar por eventos de alta relevância. No canto superior da tabela, há ícones de "touro" que representam o impacto esperado da notícia:</p>
-  <ul><li>1 touro: baixo impacto</li><li>2 touros: impacto moderado</li><li><strong>3 touros: alto impacto</strong></li></ul>
-  <p>Deve dar atenção máxima aos eventos marcados com <strong>3 touros</strong>, pois são esses que tendem a causar forte volatilidade nos ativos especialmente os índices (como US100, S&P 500), moedas (como EUR/USD), ouro e petróleo. Entre as notícias mais relevantes, destacam-se especialmente as relacionadas a:</p>
-  <ul><li><strong>Taxa de juro (Interest Rate Decision):</strong> Decisões de política monetária dos principais bancos centrais (Fed, BCE, BoE, etc.) têm alto impacto, pois afetam diretamente a liquidez e o custo do dinheiro no mundo. Uma elevação ou corte inesperado pode provocar movimentos bruscos no dólar, ouro, índices e renda variável.</li><li><strong>Reuniões do FOMC (Federal Open Market Committee):</strong> A publicação da ata ou falas de dirigentes do Fed costumam gerar especulação sobre os próximos passos da taxa de juros nos EUA.</li><li><strong>Dados de inflação (CPI, PPI):</strong> A inflação guia as decisões dos bancos centrais. Números acima ou abaixo do esperado podem antecipar ajustes na taxa de juros.</li><li><strong>Dados de emprego (Payroll, Taxa de desemprego):</strong> O relatório de empregos dos EUA, conhecido como Payroll, é um dos dados mensais mais aguardados. Pode mudar drasticamente o rumo do mercado no dia da divulgação.</li><li><strong>PIB (Produto Interno Bruto):</strong> Mostra o crescimento da economia. Um resultado inesperado pode afetar perspetivas de juros e risco-país.</li></ul>
-  <div class="video-embed-container" data-video-id="o7MdPkAjUfc"><h4>🎥 Aula: Introdução ao Mercado Americano</h4><img src="https://i.imgur.com/sdO8Y5b.jpeg" alt="Thumbnail da aula sobre mercado americano" class="video-thumbnail" onerror="this.onerror=null;this.src='https://placehold.co/640x360/000000/FFFFFF?text=Thumbnail+Indisponível';"><div class="play-icon"></div></div>
-  <div class="chapter-navigation"><a href="#mercado-brasileiro" class="nav-button next">Próximo Capítulo</a></div>
-  </section>
-  <section id="mercado-brasileiro" class="content-section market-br">
-  <h2><img src="https://flagcdn.com/w80/br.png" class="title-flag" alt="Bandeira do Brasil"> Mercado Brasileiro</h2>
-  
-    <div class="metrics-grid">
-        <div class="metric-card">
-            <div class="tradingview-widget-container" style="height:100%; width:100%">
-              <div class="tradingview-widget-container__widget" style="height:100%; width:100%"></div>
-              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-              { "symbol": "BMFBOVESPA:IBOV", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
-              </script>
-            </div>
-            </div>
-        <div class="metric-card">
-            <div class="tradingview-widget-container" style="height:100%; width:100%">
-              <div class="tradingview-widget-container__widget" style="height:100%; width:100%"></div>
-              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-              { "symbol": "FX_IDC:USDBRL", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
-              </script>
-            </div>
-            </div>
-        <div class="metric-card">
-            <div class="tradingview-widget-container" style="height:100%; width:100%">
-              <div class="tradingview-widget-container__widget" style="height:100%; width:100%"></div>
-              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-              { "symbol": "BMFBOVESPA:B3SA3", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
-              </script>
-            </div>
-            </div>
-    </div>
-
-  <div class="audio-player-container"><h4>🎧 Áudio: Resumo do Mercado Brasileiro</h4><audio controls><source src="https://www.dropbox.com/scl/fi/26bp8bkgikmdnltzdoh2t/olp60-bv6xc.mp3?rlkey=nl6w79lgcoka46fvt6ekz5x06&st=8st2weld&dl=1" type="audio/mpeg">O seu navegador não suporta o elemento de áudio.</audio></div>
-  <h3>Entendendo o Cenário: O Mercado Brasileiro (B3)</h3>
-  <p>No Brasil, o mercado de capitais é centralizado na B3 (Brasil, Bolsa, Balcão). Considerada a principal infraestrutura de mercado financeiro do país, a B3 é uma das maiores do mundo em valor de mercado e concentra a negociação de ações de empresas de renome nacional e a custódia da grande maioria dos títulos emitidos no país. Diferente do mercado americano com bolsas distintas por perfil de empresa, a B3 centraliza a negociação de companhias de todos os setores, com destaques para empresas de commodities, como Vale e Petrobras, e grandes instituições financeiras, como Itaú Unibanco e Bradesco.</p>
-  <h4>Principais Índices da B3</h4>
-  <p>Os principais índices de ações que representam o desempenho das empresas brasileiras são:</p>
-  <ul><li><strong>Ibovespa (IBOV):</strong> É o principal indicador de desempenho do mercado de ações brasileiro. Representa uma carteira teórica com as ações mais negociadas e representativas da B3, sendo o termómetro da saúde económica e do humor dos investidores em relação ao Brasil.</li><li><strong>IBrX 100 (Índice Brasil 100):</strong> Composto pelas 100 ações de maior negociabilidade e representatividade do mercado de capitais brasileiro. Oferece uma visão um pouco mais ampla que o Ibovespa.</li><li><strong>SMLL (Índice Small Cap):</strong> Acompanha o desempenho das empresas de menor capitalização de mercado (Small Caps), que geralmente possuem maior potencial de crescimento, mas também maior volatilidade.</li><li><strong>IDIV (Índice de Dividendos):</strong> Reúne as empresas que se destacam por serem boas pagadoras de dividendos, sendo um índice importante para investidores com foco em geração de renda.</li></ul>
-  <h3>A Linguagem do Gráfico: Análise Técnica Fundamental</h3>
-  <h4>O que é um Candlestick e por que motivo ele se movimenta?</h4>
-  <p>Imagine um candlestick como um "Raio-X" do preço de algum ativo (seja ele uma ação, índice, etc.) dentro de um período específico. Esse período pode ser de 1 minuto, 5 minutos, 1 hora, 1 dia, 1 semana e assim por diante. Ele mostra visualmente 4 informações essenciais: o preço de abertura, o preço de fecho, o preço máximo e o preço mínimo. A movimentação do candle ocorre pela lei da oferta e da procura (compradores vs. vendedores). Quando a força compradora é maior, o preço sobe (candle de alta). Quando a força vendedora é maior, o preço cai (candle de baixa).</p>
-  <h4>Médias Móveis: Como usar para identificar a direção?</h4>
-  <p>O conceito principal das médias móveis é "suavizar" o preço, como um filtro de ruído. Elas calculam o preço médio de um ativo ao longo de um número específico de períodos e traçam essa média como uma linha no gráfico. Existem dois tipos principais:</p>
-  <ul><li><strong>Média Móvel Simples (MMS ou SMA):</strong> Soma os preços de fecho dos últimos "X" candles e divide por "X". Todos os preços têm o mesmo peso, tornando-a mais "lenta".</li><li><strong>Média Móvel Exponencial (MME ou EMA):</strong> Dá mais peso aos preços mais recentes, tornando-a mais "rápida" e reativa. É a preferida da maioria dos traders.</li></ul>
-  <h3>Foco Operacional: Day Trade com Minicontratos</h3>
-  <h4>Vantagens e Particularidades de Operar no Mercado Brasileiro</h4>
-  <ul><li><strong>Renda Fixa Atrativa:</strong> O histórico de taxas de juros (Taxa Selic) elevadas no Brasil torna a renda fixa uma das mais rentáveis do mundo.</li><li><strong>Alta Volatilidade para Day Trade:</strong> Ativos como o mini-índice (WIN) e o minidólar (WDO) possuem alta volatilidade diária, o que atrai operadores que buscam lucrar com movimentos rápidos de preço.</li></ul>
-  <h4>Operando Mini-Índice (WIN) e Mini-Dólar (WDO)</h4>
-  <p>Minicontratos são contratos futuros usados para especular sobre a direção de um índice ou do câmbio num curtíssimo prazo.</p>
-  <ul><li><strong>Mini-Índice (WIN):</strong> Permite operar com base na expectativa da pontuação futura do Índice Ibovespa.</li><li><strong>Mini-Dólar (WDO):</strong> Permite operar a variação do dólar americano frente ao real.</li></ul>
-  <p><strong>Comparativo com os EUA:</strong> O mercado americano é o maior em contratos futuros. O equivalente ao nosso WIN são os futuros do S&P 500 (E-mini S&P 500, /ES) e da Nasdaq (E-mini Nasdaq 100, /NQ). A lógica é a mesma, mas o volume e a liquidez nos EUA são imensamente superiores.</p>
-  <h3>Execução Prática: Da Conta Aberta à Gestão de Risco</h3>
-  <h4>Escolhendo a sua Corretora e Plataforma</h4>
-  <p>Para operar no mercado brasileiro, é necessário ter conta numa corretora nacional autorizada. Usando como exemplo a GENIAL INVESTIMENTOS, o processo de abertura de conta é totalmente digital e rápido. A plataforma de negociação profissional mais utilizada no Brasil é o Profit Pro. Uma vantagem de operar com a corretora do exemplo é que, ao contratar a plataforma através da GENIAL INVESTIMENTOS e realizar pelo menos uma negociação em minicontratos (WIN ou WDO) ao mês, a mensalidade do Profit Pro torna-se totalmente gratuita.</p>
-
-                    <h4>Passo a Passo Interativo: Abrir Conta na Genial</h4>
-                    <div class="interactive-checklist">
-                        <div class="progress-bar-container"><div class="progress-bar-fill"></div></div>
-                        <label class="checklist-item"><input type="checkbox"><span>Aceder ao site ou app oficial da Genial Investimentos.</span></label>
-                        <label class="checklist-item"><input type="checkbox"><span>Clicar em "Abra a sua conta" e preencher dados iniciais (CPF, nome, etc.).</span></label>
-                        <label class="checklist-item"><input type="checkbox"><span>Enviar fotos nítidas de um documento de identificação e comprovativo de morada.</span></label>
-                        <label class="checklist-item"><input type="checkbox"><span>Responder ao questionário de perfil (Suitability), buscando o perfil "Arrojado".</span></label>
-                        <label class="checklist-item"><input type="checkbox"><span>Criar palavra-passe de acesso e assinatura eletrónica.</span></label>
-                        <label class="checklist-item"><input type="checkbox"><span>Aguardar aprovação da conta (até 2 dias úteis).</span></label>
-                        <label class="checklist-item"><input type="checkbox"><span>Com a conta aprovada, alterar a assessoria para <strong>Genial B2B 4</strong>.</span></label>
-                        <label class="checklist-item"><input type="checkbox"><span>Realizar a primeira transferência (PIX ou TED) de conta com a mesma titularidade.</span></label>
-                    </div>
-
-  <h4>Definindo o seu Risco: Stops para Cada Ativo</h4>
-  <ul><li><strong>Mini-Índice (WIN):</strong> Stops (ordens para limitar a perda) de aproximadamente 150 a 200 pontos.</li><li><strong>Mini-Dólar (WDO):</strong> Stops entre 4 e 6 pontos.</li><li><strong>Ações (PETR4, VALE3):</strong> Stop geralmente definido em percentual (ex: 1% a 2%) ou com base em suportes técnicos.</li></ul>
-  <h3>Gestão de Risco: A Chave para a Sobrevivência no Mercado</h3>
-  <p>Ter uma estratégia para entrar numa operação é importante, mas ter uma estratégia para sair dela, especialmente quando está errada, é o que garantirá a sua permanência no mercado.</p>
-  <h4>O Pilar Central: Relação Capital por Contrato (Tamanho da Posição)</h4>
-  <p>Uma forma direta de gerir o risco é definir quanto capital precisa de ter em conta para operar cada minicontrato, com base no seu perfil.</p>
-  <ul><li><strong>Para um Perfil Agressivo:</strong><ul><li>Mini-Índice (WIN): Alocar R$ 1.000,00 por cada 1 contrato.</li><li>Mini-Dólar (WDO): Alocar R$ 2.000,00 por cada 1 contrato.</li></ul></li><li><strong>Para um Perfil Conservador:</strong><ul><li>Mini-Índice (WIN): Alocar R$ 2.000,00 por cada 1 contrato.</li><li>Mini-Dólar (WDO): Alocar R$ 4.000,00 por cada 1 contrato.</li></ul></li></ul>
-  <h4>A Ferramenta Essencial: O Stop-Loss Técnico</h4>
-  <p>O stop-loss é a ordem de proteção para encerrar uma operação perdedora num ponto técnico predefinido. Após definir o número de contratos e o stop, sabe exatamente quanto está a arriscar.</p>
-  <h4>A Matemática do Lucro: Relação Risco/Retorno</h4>
-  <p>Os seus ganhos precisam de ser maiores que as suas perdas. Só entre em operações onde o potencial de ganho é, no mínimo, o dobro do seu risco. A relação mínima recomendada é 2 para 1 (2:1).</p>
-  <h4>O Limite Diário: Saiba a Hora de Parar</h4>
-  <p>Defina um limite máximo de perda diária e respeite-o. Ao atingir o valor, desligue a plataforma para evitar o "revenge trading" (operar por emoção para tentar recuperar perdas). O limite pode ser um valor financeiro fixo (ex: R$ 200) ou um número de stops seguidos.</p>
-  <div class="chapter-navigation"><a href="#mercado-americano" class="nav-button prev">Capítulo Anterior</a><a href="#criptoativos" class="nav-button next">Próximo Capítulo</a></div>
-  </section>
-  <section id="criptoativos" class="content-section market-crypto">
-  <h2>🪙 Criptoativos</h2>
-
-    <div class="metrics-grid">
-        <div class="metric-card">
-             <div class="tradingview-widget-container" style="height:100%; width:100%">
-              <div class="tradingview-widget-container__widget" style="height:100%; width:100%"></div>
-              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-              { "symbol": "BITSTAMP:BTCUSD", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
-              </script>
-            </div>
-            </div>
-        <div class="metric-card">
-            <div class="tradingview-widget-container" style="height:100%; width:100%">
-              <div class="tradingview-widget-container__widget" style="height:100%; width:100%"></div>
-              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-              { "symbol": "BITSTAMP:ETHUSD", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
-              </script>
-            </div>
-            </div>
-        <div class="metric-card">
-            <div class="tradingview-widget-container" style="height:100%; width:100%">
-              <div class="tradingview-widget-container__widget" style="height:100%; width:100%"></div>
-              <script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>
-              { "symbol": "CRYPTOCAP:TOTAL", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }
-              </script>
-            </div>
-            </div>
-    </div>
-
-  <div class="audio-player-container"><h4>🎧 Áudio: Introdução aos Criptoativos</h4><audio controls><source src="https://www.dropbox.com/scl/fi/z622a2c5tv9wbqqllha70/1i5an-1ojhh.mp3?rlkey=0wieg5dgm5v5bv4293lcknd6c&st=m68eo39x&dl=1" type="audio/mpeg">O seu navegador não suporta o elemento de áudio.</audio></div>
-  <h3>O que são Criptomoedas?</h3>
-  <p>Criptomoedas são ativos digitais descentralizados, sobre os quais governos e bancos centrais não possuem controlo. Elas utilizam a tecnologia blockchain para realizar transações seguras e transparentes. O principal objetivo por trás da criação das criptomoedas foi permitir a realização de transações financeiras sem a necessidade de intermediários, como bancos ou instituições governamentais. Para garantir a segurança, essas moedas digitais utilizam algoritmos de criptografia avançada que asseguram a integridade, confidencialidade e autenticidade das transações.</p>
-  <p>Entre as suas principais características está a acessibilidade global, permitindo que qualquer pessoa com acesso à internet envie ou receba criptoativos sem burocracia. Outro ponto fundamental é a imutabilidade, pois uma vez que uma transação é confirmada na blockchain, ela não pode ser apagada ou alterada. Embora todas as transações sejam públicas, os utilizadores permanecem anónimos, com cada movimentação vinculada a um endereço alfanumérico (chave pública) sem associação direta com dados pessoais.</p>
-  <h3>História do Bitcoin</h3>
-  <p>O conceito de criptomoedas ganhou vida em 2008 com a criação do Bitcoin (BTC) por um autor anónimo conhecido como Satoshi Nakamoto. O seu surgimento ocorreu em meio à crise financeira global de 2008 como resposta à centralização do sistema bancário. A proposta era criar um sistema peer-to-peer onde qualquer pessoa pudesse transferir valor diretamente para outra, sem depender de instituições financeiras. As operações são registadas numa blockchain, que funciona como um grande livro-razão público e imutável. O primeiro bloco, minerado em 3 de janeiro de 2009, é conhecido como Genesis Block e continha uma mensagem do jornal The Times a criticar o sistema financeiro tradicional.</p>
-  <p>A rede é mantida pelo mecanismo de Proof of Work (PoW), um processo chamado mineração, que requer alto poder computacional para validar blocos de transações e criar novos bitcoins. A recompensa pela mineração diminui pela metade a cada 210.000 blocos (aproximadamente a cada quatro anos) num evento chamado halving. Atualmente (2024), essa recompensa é de 3,125 BTC por bloco, e após o próximo halving, previsto para abril de 2028, cairá para 1,5625 BTC. Satoshi estabeleceu que apenas 21 milhões de bitcoins poderão existir, com o último a ser minerado por volta de 2140. Em 22 de maio de 2010, ocorreu a primeira compra real com a moeda: 10.000 BTC foram usados para comprar duas pizzas, evento hoje conhecido como Pizza Day. Atualmente, o Bitcoin é visto por muitos como o "ouro digital", uma reserva de valor e proteção contra a inflação.</p>
-  <h3>O que é e como funciona uma Blockchain</h3>
-  <p>A blockchain é uma cadeia de blocos interligados, onde cada bloco armazena um conjunto de transações. Cada bloco contém três elementos essenciais: os dados da transação, o hash do próprio bloco (uma "impressão digital" única) e o hash do bloco anterior, conectando-os de forma sequencial e segura. A validação das transações é realizada por mecanismos de consenso. O Proof of Work (PoW), usado pelo Bitcoin, envolve mineradores a competir para resolver problemas matemáticos complexos. Já o Proof of Stake (PoS), usado por redes como Ethereum 2.0, exige que os validadores "travem" uma quantidade de criptomoedas como garantia. O modelo PoS é mais eficiente em termos de consumo de energia. A tecnologia blockchain também viabiliza o uso de contratos inteligentes, NFTs (Tokens Não Fungíveis) e o setor de finanças descentralizadas (DeFi).</p>
-  <h3>Principais 4 Ativos</h3>
-  <p>O principal indicador para identificar a relevância de uma criptomoeda é o seu valor de mercado (Marketcap). Sites especializados como CoinMarketCap e CoinGecko fornecem esses dados. Os 4 principais ativos são:</p>
-  <ul><li><strong>Bitcoin (BTC):</strong> Possui um marketcap de US$2,09T e um volume de US$40,74B.</li><li><strong>Ethereum (ETH):</strong> Lançado em 2013, é a principal plataforma para smart contracts, com um MarketCap de $304,9B e volume diário de $13,19B.</li><li><strong>Tether (USDT):</strong> É a principal stablecoin do mercado, lastreada em dólar, com um portal de transparência sobre as suas reservas.</li><li><strong>Solana (SOL):</strong> Lançada em 2020, foca-se em alta escalabilidade e baixas taxas. Possui um Market Cap estimado em US$ 73,5 biliões e um volume diário de negociação de aproximadamente US$ 2,4 biliões.</li></ul>
-  <h3>Exchange</h3>
-  <p>Exchanges são plataformas para negociar criptomoedas. A <strong>Binance</strong> é uma das maiores do mundo, oferecendo segurança com 2FA, armazenamento em carteiras frias e um fundo de seguro (SAFU). A <strong>Coinbase</strong> é popular entre iniciantes, armazena 98% dos fundos em carteiras frias e é regulamentada nos EUA. A <strong>Kraken</strong> é uma das mais antigas e respeitáveis, conhecida pela sua segurança robusta e por publicar relatórios de provas de reserva. Outras exchanges de renome incluem Gemini, Bitstamp, Huobi e OKX. Atualmente, a Binance continua a ser a mais usada no mundo.</p>
-  <h3>Armazenamento das suas Criptos</h3>
-  <h4>Cold Wallets (Carteiras Frias)</h4>
-  <p>Uma cold wallet é uma carteira física e offline que oferece alto nível de segurança por não estar conectada à internet. Exemplos incluem Ledger e Trezor, sendo indicadas para armazenamento a longo prazo. Elas dão ao utilizador controlo total sobre os seus ativos. As desvantagens incluem a menor praticidade para transações rápidas, o risco físico de perda ou dano do dispositivo, o custo do hardware e a responsabilidade total do utilizador pela segurança da frase de recuperação.</p>
-  <h4>Hot Wallets (Carteiras Quentes)</h4>
-  <p>Hot wallets são ferramentas digitais constantemente conectadas à internet, o que facilita transações rápidas e o acesso aos fundos. Elas podem ser aplicações para telemóvel, extensões de navegador ou softwares de desktop. As mais conhecidas são Trust Wallet, MetaMask e a wallet da Binance. Por estarem sempre online, as hot wallets apresentam um nível de segurança inferior em comparação com as cold wallets, estando vulneráveis a hackers, malwares e golpes. São ideais para armazenar pequenas quantias ou para uso diário.</p>
-  <h3>Custódia</h3>
-  <p>Custódia refere-se ao processo de proteção dos ativos digitais. Os custodiantes não armazenam os ativos em si, mas sim as chaves privadas que concedem acesso a eles. Existem duas formas principais: autocustódia e custódia de terceiros.</p>
-  <p>Na <strong>autocustódia</strong>, o próprio utilizador assume total responsabilidade pelo armazenamento seguro da sua chave privada, conferindo autonomia total. Já na <strong>custódia de terceiros</strong>, instituições especializadas guardam as chaves privadas em nome dos clientes. Essa modalidade é recomendada para quem não deseja assumir diretamente a responsabilidade pela segurança. Existem três categorias de custodiantes terceirizados: exchanges centralizadas, gestores de ativos digitais e bancos tradicionais. Deixar os ativos em exchanges implica que o utilizador não detém a chave privada, resumido pela máxima "not your keys, not your coins". A custódia de terceiros envolve custos como taxa de custódia, de configuração e de retirada. A desvantagem é a renúncia parcial ao controlo dos ativos e riscos como congelamento de contas ou falência da instituição.</p>
-  <h3>Tributação</h3>
-  <p>No Brasil, não existe uma lei específica para a tributação de criptomoedas. A Receita Federal considera esses ativos como bens ou direitos, que devem ser declarados no Imposto de Renda. A forma de cobrança depende do tipo de operação. No caso de venda com lucro, é preciso calcular o ganho de capital, que é a diferença entre o valor de venda e o de compra da moeda. O lucro pode ser tributado com alíquotas que vão de 15% a 22,5%. O imposto é recolhido por meio do programa da Receita Federal, na secção "Ganhos de Capital", e o valor deve ser pago até ao prazo da última parcela do IR.</p>
-  <div class="chapter-navigation"><a href="#mercado-brasileiro" class="nav-button prev">Capítulo Anterior</a><a href="#perfil-investidor" class="nav-button next">Próximo Capítulo</a></div>
-  </section>
-              <section id="perfil-investidor" class="content-section">
-                    <h2>🤔 Descubra o seu Perfil de Investidor</h2>
-                    <p>Entender a sua tolerância ao risco é o primeiro passo para uma jornada de investimentos bem-sucedida. Este questionário, similar ao <strong>Suitability</strong> exigido pelas corretoras como a Genial Investimentos, ajudá-lo-á a ter uma ideia clara do seu perfil. Responda com sinceridade!</p>
-                    
-                    <form id="profile-quiz-form" class="quiz-form">
-                        <div class="questions-wrapper">
+              <details id="perfil-investidor" class="content-section-details profile-theme">
+                  <summary class="content-section-summary">
+                      <h2>🤔 Perfil de Investidor</h2>
+                  </summary>
+                  <div class="content-section-body">
+                      <p>Entender a sua tolerância ao risco é o primeiro passo para uma jornada de investimentos bem-sucedida. Este questionário, similar ao <strong>Suitability</strong> exigido pelas corretoras como a Genial Investimentos, ajudá-lo-á a ter uma ideia clara do seu perfil. Responda com sinceridade!</p>
+                      <form id="profile-quiz-form" class="quiz-form">
+                          <div class="questions-wrapper">
                             <div class="quiz-question">
                                 <p>1. Qual é o seu principal objetivo ao investir?</p>
                                 <div class="quiz-options">
@@ -1645,27 +1617,23 @@
                                     <label><input type="radio" name="q10" value="3" required> Vejo as perdas como oportunidades e entendo que são necessárias para grandes ganhos.</label>
                                 </div>
                             </div>
+                          </div>
+                          <button type="submit">Ver o Meu Perfil</button>
+                          <div id="profile-quiz-result" class="quiz-result" style="font-size: 1.2em; display: none;"></div>
+                      </form>
+                  </div>
+              </details>
 
-                        </div>
-
-                        <button type="submit">Ver o Meu Perfil</button>
-                        <div id="profile-quiz-result" class="quiz-result" style="font-size: 1.2em; display: none;"></div>
-                    </form>
-
-                    <div class="chapter-navigation">
-                        <a href="#criptoativos" class="nav-button prev">Capítulo Anterior</a>
-                        <a href="#quiz" class="nav-button next">Próximo Capítulo</a>
-                    </div>
-                </section>
-              <section id="quiz" class="content-section">
-                  <h2>✅ Quiz de Aprendizagem</h2>
-                  <div class="quiz-container">
+              <details id="quiz" class="content-section-details quiz-theme">
+                  <summary class="content-section-summary">
+                      <h2>✅ Quiz de Aprendizagem</h2>
+                  </summary>
+                  <div class="content-section-body quiz-container">
                       <details><summary class="us-theme">Prova: Mercado Americano 🇺🇸</summary><form class="quiz-form" id="quiz-americano"><div class="questions-wrapper"></div><button type="submit">Verificar Respostas</button><div class="quiz-result"></div></form></details>
                       <details><summary class="br-theme">Prova: Mercado Brasileiro (B3) 🇧🇷</summary><form class="quiz-form" id="quiz-brasileiro"><div class="questions-wrapper"></div><button type="submit">Verificar Respostas</button><div class="quiz-result"></div></form></details>
                       <details><summary class="crypto-theme">Prova: Criptoativos 🪙</summary><form class="quiz-form" id="quiz-cripto"><div class="questions-wrapper"></div><button type="submit">Verificar Respostas</button><div class="quiz-result"></div></form></details>
                   </div>
-                  <div class="chapter-navigation"><a href="#perfil-investidor" class="nav-button prev">Capítulo Anterior</a></div>
-              </section>
+              </details>
           </main>
       </div>
       
