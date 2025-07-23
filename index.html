@@ -1034,6 +1034,7 @@
     content: '▶';
     font-size: 0.8em;
     transition: transform 0.3s ease;
+    transform: rotate(0deg);
   }
   .content-section-details[open] > .content-section-summary h2::after {
     transform: rotate(90deg);
@@ -1065,12 +1066,14 @@
     content: '▶';
     font-size: 0.8em;
     transition: transform 0.3s ease;
+    transform: rotate(0deg);
   }
   .sub-topic-details[open] > .sub-topic-summary h3::after {
     transform: rotate(90deg);
   }
   .sub-topic-body {
     padding-bottom: 15px;
+    padding-left: 10px;
   }
   /* --- FIM DOS ESTILOS ACCORDION --- */
 
@@ -1417,91 +1420,7 @@
                       <h2><img src="https://flagcdn.com/w80/us.png" class="title-flag" alt="Bandeira dos EUA"> Mercado Americano</h2>
                   </summary>
                   <div class="content-section-body">
-                      <div class="metrics-grid">
-                          <div class="metric-card"><div class="tradingview-widget-container" style="height:100%;width:100%"><div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{ "symbol": "SPREADEX:SPX", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }</script></div></div>
-                          <div class="metric-card"><div class="tradingview-widget-container" style="height:100%;width:100%"><div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{ "symbol": "NASDAQ:NDX", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }</script></div></div>
-                          <div class="metric-card"><div class="tradingview-widget-container" style="height:100%;width:100%"><div class="tradingview-widget-container__widget" style="height:100%;width:100%"></div><script type="text/javascript" src="https://s3.tradingview.com/external-embedding/embed-widget-mini-symbol-overview.js" async>{ "symbol": "OANDA:XAUUSD", "width": "100%", "height": "100%", "locale": "br", "dateRange": "12M", "colorTheme": "dark", "isTransparent": true, "autosize": true, "largeChartUrl": "" }</script></div></div>
                       </div>
-                      <div class="audio-player-container"><h4>🎧 Áudio: Resumo do Mercado Americano</h4><audio controls><source src="https://www.dropbox.com/scl/fi/8615m71gfm293cw2a9gax/09zqt-8w7nm.mp3?rlkey=p4ggvqiu98cpqm9oy69a8wqmy&st=f5rg6qs2&dl=1" type="audio/mpeg">O seu navegador não suporta o elemento de áudio.</audio></div>
-                      <details class="sub-topic-details">
-                          <summary class="sub-topic-summary"><h3>Bolsas de Valores e Índices</h3></summary>
-                          <div class="sub-topic-body">
-                              <p>O mercado financeiro americano é um ambiente dinâmico e altamente estruturado onde diversos tipos de ativos são negociados. Ele divide-se em diferentes segmentos, como o mercado de ações, o mercado de títulos, o mercado de câmbio e o de derivados. Cada um desses segmentos possui características específicas, regras próprias e mecanismos de funcionamento que os tornam essenciais para a engrenagem do sistema económico dos EUA.</p>
-                              <h4>As Bolsas de Valores Americanas</h4>
-                              <p>A bolsa de valores americana é considerada a maior e mais influente do mundo, abrigando companhias de capital aberto de renome global. A <strong>Nasdaq</strong> é quase inteiramente voltada para empresas de tecnologia, com destaques como Apple, Netflix, Meta (Facebook), Google (Alphabet), Amazon e Microsoft. A capitalização total de mercado das empresas negociadas nas bolsas americanas ultrapassa <strong>US$ 25 triliões</strong>, evidenciando a magnitude e influência global desse mercado.</p>
-                              <h4>Principais Índices Americanos</h4>
-                              <ul><li><strong>Nasdaq Composite:</strong> Um índice amplo que reúne aproximadamente 3.000 empresas listadas na Nasdaq, sendo cerca de 60% do setor de tecnologia, refletindo a força da inovação e da transformação digital nos Estados Unidos.</li><li><strong>Nasdaq-100:</strong> Composto pelas 100 maiores empresas não financeiras listadas na Nasdaq, este índice é altamente concentrado em empresas de tecnologia e consumo, servindo como termómetro das companhias de maior crescimento e capitalização na bolsa.</li><li><strong>S&P 500 (Standard & Poor's 500):</strong> Representa as 500 maiores empresas de capital aberto dos Estados Unidos, englobando diversos setores da economia, e é considerado o índice mais representativo da saúde económica americana.</li><li><strong>Dow Jones Industrial Average (DJIA):</strong> Acompanha o desempenho de 30 das maiores e mais influentes empresas dos EUA, sendo um dos índices mais antigos e simbólicos do mercado financeiro global, com foco em empresas consolidadas e de grande reputação.</li></ul>
-                              <p>Juntos, esses índices oferecem uma visão abrangente e estratégica do comportamento do mercado americano, permitindo que investidores e analistas tomem decisões baseadas em dados concretos sobre os diferentes setores da economia.</p>
-                          </div>
-                      </details>
-                      <details class="sub-topic-details">
-                          <summary class="sub-topic-summary"><h3>Vantagens de Operar no Mercado Internacional</h3></summary>
-                          <div class="sub-topic-body">
-                              <p>O mercado americano possui um maior volume quando comparado com a B3 (Bolsa de Valores Brasileira), o que resulta em excelentes movimentos, especialmente quando alinhado à tendência, com um risco pequeno para um alvo gigante (Payoff). Também oferece uma diversidade de ativos a explorar, como Bitcoin, NASDAQ, Ouro, DAX, entre outros. Essa diversidade é uma vantagem, pois se um ativo não estiver a performar bem, é possível mudar para outro que esteja, evitando ficar "preso a apenas um ativo".</p>
-                              <p>Como saber se um ativo está "mau" ou "bom"? Ativos considerados bons são aqueles que possuem menos ruído nos candles. O ruído indica que um ativo está lateral, não se movendo significativamente nem para cima nem para baixo, o que exige muito cuidado ao operar.</p>
-                              <p>Operar no mercado americano também abre a possibilidade de <strong>ganhar em dólar</strong>, um dos maiores atrativos para quem opera. Ao realizar operações em ativos precificados em dólar (ações, commodities ou pares de moedas no Forex), o investidor fica exposto não apenas à valorização do ativo, mas também à variação cambial. Isso significa que, além do lucro operacional, há um potencial ganho adicional caso o dólar se valorize frente ao real.</p>
-                          </div>
-                      </details>
-                      <details class="sub-topic-details">
-                          <summary class="sub-topic-summary"><h3>Metodologia Operacional e Gestão de Risco</h3></summary>
-                          <div class="sub-topic-body">
-                              <p>A construção de uma metodologia operacional eficaz, especialmente no contexto do mercado internacional, exige não apenas conhecimento técnico, mas também disciplina comportamental.</p>
-                              <h4>Estratégia: Continuidade de Tendência</h4>
-                              <p>Uma abordagem consolidada entre os operadores mais experientes é um foco maior nas operações de <strong>continuidade de tendência</strong>. Essa estratégia baseia-se em identificar e posicionar-se a favor da direção predominante, evitando, mas não inviabilizando, contramovimentos que, embora possam gerar lucro significativo, tendem a oferecer mais instabilidade e riscos operacionais. No modelo apresentado, o trader escolhe, de forma consciente, evitar operações contra a tendência do mercado. Essa decisão não é apenas técnica, mas também mental: ao treinar a mente para buscar somente oportunidades a favor da direção principal dos preços, fica mais fácil manter a consistência e a disciplina nas decisões. Isso ajuda a evitar que emoções atrapalhem nos momentos em que o mercado está mais volátil ou confuso.</p>
-                              <p>Um dos pilares dessa metodologia está no alinhamento de tempos gráficos. A leitura deve começar nos tempos maiores, como o Diário e 60 minutos, e descer progressivamente para os menores, 15 e 5 minutos. O objetivo é verificar a convergência das tendências e das médias móveis exponenciais e simples (notadamente as de <code>9, 20, 50, 72 e 200</code> períodos). Quando todos os tempos e médias estão alinhados numa única direção (por exemplo, tendência de alta), o operador direciona a sua atenção exclusivamente para gatilhos de continuidade.</p>
-                              <p>No micro, a análise técnica é mais refinada por meio da observação de estruturas clássicas de preços, como pivôs de alta e baixa, espelhamentos, retângulos e triângulos. A ativação dessas estruturas orienta os pontos de entrada com maior probabilidade de êxito. Além disso, destaca-se a importância do reconhecimento de pullbacks e da reancoragem às médias móveis, fenómenos que indicam pausas naturais no fluxo direcional do mercado e fornecem zonas técnicas de reposicionamento com risco controlado. A entrada dá-se preferencialmente mediante a formação de um candle gatilho, cuja função é confirmar visualmente a retomada da tendência principal.</p>
-                              <h4>Gestão de Risco e Stops Técnicos</h4>
-                              <p>A estrutura adota uma gestão de risco específica por ativo, baseada na volatilidade média de cada um. A seguir, o tamanho médio dos stops nos principais ativos operados:</p>
-                              <ul><li>Bitcoin (BTC/USD): aproximadamente 250 pontos</li><li>USATEC/Nasdaq (US100): cerca de 25 pontos</li><li>Ouro (XAU/USD): entre 3 e 4 pontos; acima disso, o risco começa a comprometer o custo-benefício da operação.</li><li>G40/DAX (GER40): entre 25 e 40 pontos</li><li>EUR/USD (par de moedas Forex): entre 8 e 10 pontos</li></ul>
-                              <p>A recomendação é que o trader utilize um simulador de mercado para testar o tamanho da posição e entender qual a melhor "mão" para cada ativo, explorando essa dinâmica de deslocamento de stop em função do volume financeiro envolvido. Esses testes permitem o treino do olhar técnico e do tempo de tela, que são fundamentais para aprimorar a leitura de mercado e a execução das ordens.</p>
-                              <h4>Ajuste Fino e Gestão</h4>
-                              <p>Outro aspeto técnico relevante está no posicionamento estratégico do stop-loss, que deve ser ajustado de forma levemente inferior ao ponto técnico considerado ideal. Essa prática busca evitar que o operador seja retirado prematuramente da operação devido à variação do spread, ou seja, a diferença entre o preço de compra (bid) e o preço de venda (ask). É importante ressaltar que o spread varia de ativo para ativo e também sofre influência do horário de negociação, sendo normalmente maior fora dos períodos de maior liquidez.</p>
-                              <p>Em relação à gestão de risco pessoal, a referência adotada pelo operador consiste num limite diário de perda (GR) entre <strong>US$ 1.000 a US$ 1.500</strong>, aplicado sobre uma conta de US$ 100.000. Esse valor é diluído em três a quatro operações diárias, resultando numa média de US$ 300 a US$ 500 de stop por operação. A estratégia opta por uma alavancagem controlada, que permite entradas mais robustas, sem o excesso de operações que, no longo prazo, tendem a reduzir a assertividade. Essa abordagem demonstra um equilíbrio entre exposição ao risco e preservação de capital, reforçando a importância de operar com uma metodologia clara, aliada a um controlo emocional treinado para lidar com a imprevisibilidade dos mercados financeiros globais.</p>
-                          </div>
-                      </details>
-                      <details class="sub-topic-details">
-                          <summary class="sub-topic-summary"><h3>Corretora e Plataforma</h3></summary>
-                          <div class="sub-topic-body">
-                              <h4>Corretora: ZeroMarkets</h4>
-                              <p>Para comprar ações no mercado americano, é necessário ter conta numa corretora estrangeira e de confiança. A equipa Xtraders possui parceria com a <strong>ZeroMarkets</strong>, uma corretora com suporte 24h humanizado e em Português (WhatsApp), que oferece os menores spreads do mercado e integração ao Black Arrow gratuitamente, caso alguns requisitos sejam cumpridos.</p>
-                              <h4>Passo a Passo Interativo: Criar Conta na ZeroMarkets</h4>
-                              <div class="interactive-checklist">
-                                  <div class="progress-bar-container"><div class="progress-bar-fill"></div></div>
-                                  <label class="checklist-item"><input type="checkbox"><span>Aceder ao site da ZeroMarkets através do link de parceiro.</span></label>
-                                  <label class="checklist-item"><input type="checkbox"><span>Preencher dados iniciais e confirmar o e-mail com o código de 6 dígitos.</span></label>
-                                  <label class="checklist-item"><input type="checkbox"><span>Criar uma palavra-passe de acesso segura.</span></label>
-                                  <label class="checklist-item"><input type="checkbox"><span>Selecionar "Conta REAL" и preencher dados pessoais.</span></label>
-                                  <label class="checklist-item"><input type="checkbox"><span>Enviar foto nítida de um documento de identificação (CNH, BI, etc.).</span></label>
-                                  <label class="checklist-item"><input type="checkbox"><span>Enviar comprovativo de morada emitido no Brasil.</span></label>
-                                  <label class="checklist-item"><input type="checkbox"><span>Preencher o questionário de perfil (Suitability) conforme as recomendações.</span></label>
-                                  <label class="checklist-item"><input type="checkbox"><span>Confirmar se o código IB é <strong>31439-TIME XTRADERS</strong> antes de finalizar.</span></label>
-                              </div>
-                              <h4>Plataforma: Porque utilizar o BlackArrow?</h4>
-                              <p>O <strong>BlackArrow</strong> é a plataforma de negociação preferencial da equipa Xtraders. Desenvolvida para o mercado internacional, ela oferece uma experiência profissional completa e muito semelhante ao que os traders brasileiros já conhecem no Profit da Nelógica, mas com foco nas operações globais. O seu custo mensal é de <strong>US$ 22</strong>, porém, esse valor pode ser totalmente isento caso o trader cumpra alguns requisitos: estar vinculado ao código IB 31439 (equipa xtraders), realizar um depósito mínimo de US$ 200 e, dentro do período de um mês, operar pelo menos 20 contratos de commodities ou índices, ou então 2 contratos de metais como o ouro.</p>
-                              <p>Após o depósito, o BlackArrow pode ser descarregado diretamente na área de downloads do site da ZeroMarkets ou através de um link enviado por e-mail. Para deixar a plataforma configurada da mesma forma que a equipa utiliza, é possível importar um ficheiro padrão acedendo ao menu "Ficheiro > Importar/Exportar configurações".</p>
-                              <p>A configuração visual recomendada pela equipa Xtraders inclui fundo branco nos gráficos, candles positivos com linha branca e candles negativos com linha e preenchimento pretos. A escala logarítmica deve ser ativada, a grelha vertical e horizontal removida e a marca d'água mantida ativa, facilitando a identificação do ativo no ecrã.</p>
-                              <h4>Principais Ativos Operados:</h4>
-                              <p>Poderá operar com eficiência os principais ativos do mercado global. Os mais utilizados são:</p>
-                              <ul><li>BTC/USD (Bitcoin)</li><li>USATEC/US100 (índice Nasdaq)</li><li>XAU/USD (ouro)</li><li>GER40/G40 (índice DAX da Alemanha)</li><li>EUR/USD (par de moedas Forex)</li><li>Outros ativos: XBR/USD (petróleo), HK50 (índice de Hong Kong), JP225 (índice Nikkei - Japão), UK100 (Reino Unido)</li></ul>
-                              <h4>Funcionalidades e Otimizações da Plataforma</h4>
-                              <p>Para garantir clareza nos custos operacionais, é fundamental ativar a visualização do spread clicando com o botão direito no gráfico e selecionando "preços bid". A diferença entre as linhas de compra e venda corresponde ao spread da operação. Também é essencial ativar a barra de estudos, acedida pelo botão direito no gráfico, para inserir ferramentas como Fibonacci, retângulos e linhas de tendência. Para otimizar a visualização dos ativos, recomenda-se o agrupamento dos gráficos. Isso é feito clicando no círculo com três pontos e selecionando o mesmo grupo (exemplo: Grupo 1) para todas as janelas. Além disso, é importante manter ativada a exibição de dividendos, juros e bonificações para uma leitura completa dos ativos.</p>
-                              <p>A plataforma ainda conta com a função "Relógio de mercado", acessível no menu "Ferramentas", que mostra os horários de abertura e fecho das principais bolsas do mundo, algo essencial para entender os momentos de maior liquidez e volatilidade. É possível também alterar a moeda de visualização dos resultados, por exemplo, de dólar para real, diretamente na parte superior da plataforma.</p>
-                              <p>Outro recurso muito utilizado pela equipa Xtraders é a função de cálculo de stop e gain. Através da barra lateral, basta aceder a "estratégia > personalizadas", configurar os valores desejados em dinheiro e, ao pressionar Shift, a plataforma exibirá exatamente até onde o mercado precisa de se movimentar para atingir os alvos definidos, facilitando o cálculo do lote ideal.</p>
-                              <p>Por fim, para deixar o ambiente de operação mais limpo e funcional, recomenda-se manter apenas os botões essenciais visíveis: compra a mercado, venda a mercado, zerar, cancelar e zerar tudo. Dessa forma, o BlackArrow torna-se uma plataforma objetiva, eficiente e totalmente alinhada com o estilo operacional da equipa Xtraders.</p>
-                          </div>
-                      </details>
-                      <details class="sub-topic-details">
-                          <summary class="sub-topic-summary"><h3>Como Identificar Notícias Relevantes</h3></summary>
-                          <div class="sub-topic-body">
-                              <p>Para identificar notícias relevantes que podem impactar as suas decisões no mercado financeiro, o <strong>Calendário Económico do site Investing.com</strong> é uma das ferramentas mais úteis и acessíveis. Ele permite acompanhar, em tempo real, os principais eventos e indicadores económicos globais que influenciam diretamente a volatilidade dos ativos especialmente no mercado internacional.</p>
-                              <p>Ao aceder ao site Investing.com, vá até ao separador "Calendário Económico". Lá, verá uma lista com os eventos programados para o dia, incluindo hora de divulgação, país de origem, importância esperada e tipo de indicador (inflação, desemprego, PIB, etc.). Para facilitar a leitura e evitar ruídos desnecessários, o ideal é filtrar por eventos de alta relevância. No canto superior da tabela, há ícones de "touro" que representam o impacto esperado da notícia:</p>
-                              <ul><li>1 touro: baixo impacto</li><li>2 touros: impacto moderado</li><li><strong>3 touros: alto impacto</strong></li></ul>
-                              <p>Deve dar atenção máxima aos eventos marcados com <strong>3 touros</strong>, pois são esses que tendem a causar forte volatilidade nos ativos especialmente os índices (como US100, S&P 500), moedas (como EUR/USD), ouro e petróleo. Entre as notícias mais relevantes, destacam-se especialmente as relacionadas a:</p>
-                              <ul><li><strong>Taxa de juro (Interest Rate Decision):</strong> Decisões de política monetária dos principais bancos centrais (Fed, BCE, BoE, etc.) têm alto impacto, pois afetam diretamente a liquidez e o custo do dinheiro no mundo. Uma elevação ou corte inesperado pode provocar movimentos bruscos no dólar, ouro, índices e renda variável.</li><li><strong>Reuniões do FOMC (Federal Open Market Committee):</strong> A publicação da ata ou falas de dirigentes do Fed costumam gerar especulação sobre os próximos passos da taxa de juros nos EUA.</li><li><strong>Dados de inflação (CPI, PPI):</strong> A inflação guia as decisões dos bancos centrais. Números acima ou abaixo do esperado podem antecipar ajustes na taxa de juros.</li><li><strong>Dados de emprego (Payroll, Taxa de desemprego):</strong> O relatório de empregos dos EUA, conhecido como Payroll, é um dos dados mensais mais aguardados. Pode mudar drasticamente o rumo do mercado no dia da divulgação.</li><li><strong>PIB (Produto Interno Bruto):</strong> Mostra o crescimento da economia. Um resultado inesperado pode afetar perspetivas de juros e risco-país.</li></ul>
-                              <div class="video-embed-container" data-video-id="o7MdPkAjUfc"><h4>🎥 Aula: Introdução ao Mercado Americano</h4><img src="https://i.imgur.com/sdO8Y5b.jpeg" alt="Thumbnail da aula sobre mercado americano" class="video-thumbnail" onerror="this.onerror=null;this.src='https://placehold.co/640x360/000000/FFFFFF?text=Thumbnail+Indisponível';"><div class="play-icon"></div></div>
-                          </div>
-                      </details>
-                  </div>
               </details>
 
               <details id="mercado-brasileiro" class="content-section-details market-br">
@@ -1536,7 +1455,6 @@
                                     <label><input type="radio" name="q1" value="3" required> Maximizar os ganhos, mesmo que isso signifique correr riscos elevados e aceitar perdas no curto prazo.</label>
                                 </div>
                             </div>
-
                             <div class="quiz-question">
                                 <p>2. Por quanto tempo você pretende manter seus investimentos aplicados?</p>
                                 <div class="quiz-options">
@@ -1545,7 +1463,6 @@
                                     <label><input type="radio" name="q2" value="3" required> Longo prazo (mais de 5 anos).</label>
                                 </div>
                             </div>
-
                             <div class="quiz-question">
                                 <p>3. Seus investimentos perdem 20% do valor em um mês. Qual sua atitude?</p>
                                 <div class="quiz-options">
@@ -1554,7 +1471,6 @@
                                     <label><input type="radio" name="q3" value="3" required> Compraria mais, aproveitando a oportunidade de "preço baixo".</label>
                                 </div>
                             </div>
-
                             <div class="quiz-question">
                                 <p>4. Qual a sua familiaridade com produtos de renda variável (Ações, Fundos Imobiliários, Minicontratos, Cripto)?</p>
                                 <div class="quiz-options">
@@ -1563,7 +1479,6 @@
                                     <label><input type="radio" name="q4" value="3" required> Alta. Conheço bem a maioria dos produtos e opero ou pretendo operar com frequência.</label>
                                 </div>
                             </div>
-
                             <div class="quiz-question">
                                 <p>5. Qual das seguintes frases descreve melhor a sua situação financeira atual?</p>
                                 <div class="quiz-options">
@@ -1572,7 +1487,6 @@
                                     <label><input type="radio" name="q5" value="3" required> Tenho um patrimônio consolidado e uma alta capacidade de poupança e investimento.</label>
                                 </div>
                             </div>
-
                             <div class="quiz-question">
                                 <p>6. Que percentual do seu patrimônio você estaria confortável em alocar em investimentos de maior risco?</p>
                                 <div class="quiz-options">
@@ -1581,7 +1495,6 @@
                                     <label><input type="radio" name="q6" value="3" required> Acima de 30%.</label>
                                 </div>
                             </div>
-
                             <div class="quiz-question">
                                 <p>7. Você possui formação acadêmica ou certificações na área financeira (economia, finanças, CEA, etc.)?</p>
                                 <div class="quiz-options">
@@ -1590,7 +1503,6 @@
                                     <label><input type="radio" name="q7" value="3" required> Sim, possuo formação ou certificação na área.</label>
                                 </div>
                             </div>
-
                             <div class="quiz-question">
                                 <p>8. Com que frequência você pode precisar resgatar uma parte significativa dos seus investimentos?</p>
                                 <div class="quiz-options">
@@ -1599,7 +1511,6 @@
                                     <label><input type="radio" name="q8" value="3" required> Baixa. Este é um dinheiro que não precisarei no curto ou médio prazo.</label>
                                 </div>
                             </div>
-
                             <div class="quiz-question">
                                 <p>9. Há quanto tempo você investe no mercado financeiro?</p>
                                 <div class="quiz-options">
@@ -1608,7 +1519,6 @@
                                     <label><input type="radio" name="q9" value="3" required> Invisto há mais de 5 anos e tenho experiência sólida.</label>
                                 </div>
                             </div>
-
                             <div class="quiz-question">
                                 <p>10. Como você se sente em relação à possibilidade de perder parte do seu capital em busca de maiores retornos?</p>
                                 <div class="quiz-options">
